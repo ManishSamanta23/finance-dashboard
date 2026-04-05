@@ -13,11 +13,16 @@ const ProtectedRoute = ({ children }) => {
           justifyContent: 'center',
           alignItems: 'center',
           height: '100vh',
-          background: 'var(--bg)',
-          color: 'var(--text)',
+          background: '#f0f2f7',
+          color: '#0f1117',
+          fontFamily: 'Inter, sans-serif',
+          fontSize: '16px',
         }}
       >
-        Loading...
+        <div style={{ textAlign: 'center' }}>
+          <div style={{ marginBottom: '16px', fontSize: '18px', fontWeight: '600' }}>Loading...</div>
+          <div style={{ fontSize: '12px', color: '#6b7280' }}>Please wait while we initialize your app</div>
+        </div>
       </div>
     );
   }

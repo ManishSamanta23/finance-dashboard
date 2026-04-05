@@ -44,11 +44,11 @@ function App() {
               }
             />
 
-            {/* Default redirect */}
-            <Route path="/" element={<Navigate to="/dashboard" replace />} />
+            {/* Default redirect to login (user will be redirected to dashboard after login) */}
+            <Route path="/" element={<Navigate to="/login" replace />} />
 
             {/* Catch-all redirect */}
-            <Route path="*" element={<Navigate to="/dashboard" replace />} />
+            <Route path="*" element={<Navigate to="/" replace />} />
           </Routes>
         </AppProvider>
       </AuthProvider>
