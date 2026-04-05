@@ -1,10 +1,11 @@
 const express = require('express');
 const router = express.Router();
 const Transaction = require('../models/Transaction');
+const { isConnected } = require('../config/db');
 
 // Mock data fallback
 const mockTransactions = require('../config/mockData');
-let useMock = false;
+let mockStore = [...mockTransactions];
 
 // Validation middleware for transaction creation/update
 const validateTransaction = (req, res, next) => {
@@ -52,6 +53,39 @@ const validateTransaction = (req, res, next) => {
 router.get('/', async (req, res) => {
   try {
     const { type, category, search, sortBy = 'date', order = 'desc', startDate, endDate } = req.query;
+
+    // Check if MongoDB is connected
+    if (!isConnected()) {
+      // Use mock mode when not connected
+      let results = [...mockStore];
+
+      // Apply filters
+      if (type) results = results.filter(t => t.type === type);
+      if (category) results = results.filter(t => t.category === category);
+      if (search) results = results.filter(t => t.title.toLowerCase().includes(search.toLowerCase()));
+      if (startDate || endDate) {
+        results = results.filter(t => {
+          const txDate = new Date(t.date);
+          if (startDate && txDate < new Date(startDate)) return false;
+          if (endDate && txDate > new Date(endDate)) return false;
+          return true;
+        });
+      }
+
+      // Apply sorting
+      const sortKey = sortBy === 'date' ? 'date' : sortBy;
+      results.sort((a, b) => {
+        const aVal = a[sortKey];
+        const bVal = b[sortKey];
+        if (aVal < bVal) return order === 'asc' ? -1 : 1;
+        if (aVal > bVal) return order === 'asc' ? 1 : -1;
+        return 0;
+      });
+
+      return res.json({ success: true, data: results, mode: 'mock' });
+    }
+
+    // MongoDB mode
     let query = {};
     if (type) query.type = type;
     if (category) query.category = category;
@@ -63,19 +97,57 @@ router.get('/', async (req, res) => {
     }
     const sort = { [sortBy]: order === 'asc' ? 1 : -1 };
     const transactions = await Transaction.find(query).sort(sort);
-    res.json({ success: true, data: transactions });
+    res.json({ success: true, data: transactions, mode: 'database' });
   } catch (err) {
-    res.json({ success: true, data: mockTransactions });
+    // Fallback to mock store on error
+    res.json({ success: true, data: mockStore, mode: 'mock', error: 'Using mock data due to DB error' });
   }
 });
 
 // POST create transaction
 router.post('/', validateTransaction, async (req, res) => {
   try {
+    // Check if MongoDB is connected
+    if (!isConnected()) {
+      // Mock mode - create in-memory transaction
+      const newMockTransaction = {
+        _id: Date.now().toString(),
+        ...req.body,
+        amount: Number(req.body.amount),
+        createdAt: new Date(),
+        updatedAt: new Date()
+      };
+      mockStore.unshift(newMockTransaction);
+      return res.status(201).json({
+        success: true,
+        data: newMockTransaction,
+        mode: 'mock',
+        message: 'Transaction saved locally (database unavailable)'
+      });
+    }
+
+    // MongoDB mode
     const transaction = new Transaction(req.body);
     await transaction.save();
-    res.status(201).json({ success: true, data: transaction });
+    res.status(201).json({ success: true, data: transaction, mode: 'database' });
   } catch (err) {
+    // If DB error, try mock mode as fallback
+    if (!isConnected()) {
+      const newMockTransaction = {
+        _id: Date.now().toString(),
+        ...req.body,
+        amount: Number(req.body.amount),
+        createdAt: new Date(),
+        updatedAt: new Date()
+      };
+      mockStore.unshift(newMockTransaction);
+      return res.status(201).json({
+        success: true,
+        data: newMockTransaction,
+        mode: 'mock',
+        message: 'Transaction saved locally (database error)'
+      });
+    }
     res.status(400).json({ success: false, error: err.message });
   }
 });
@@ -83,10 +155,49 @@ router.post('/', validateTransaction, async (req, res) => {
 // PUT update transaction
 router.put('/:id', validateTransaction, async (req, res) => {
   try {
+    // Check if MongoDB is connected
+    if (!isConnected()) {
+      // Mock mode - update in mockStore
+      const index = mockStore.findIndex(t => t._id === req.params.id);
+      if (index === -1) {
+        return res.status(404).json({ success: false, error: 'Transaction not found' });
+      }
+
+      const updated = {
+        ...mockStore[index],
+        ...req.body,
+        amount: Number(req.body.amount),
+        _id: mockStore[index]._id,
+        createdAt: mockStore[index].createdAt,
+        updatedAt: new Date()
+      };
+      mockStore[index] = updated;
+      return res.json({ success: true, data: updated, mode: 'mock' });
+    }
+
+    // MongoDB mode
     const transaction = await Transaction.findByIdAndUpdate(req.params.id, req.body, { new: true });
     if (!transaction) return res.status(404).json({ success: false, error: 'Not found' });
-    res.json({ success: true, data: transaction });
+    res.json({ success: true, data: transaction, mode: 'database' });
   } catch (err) {
+    // Fallback to mock mode if DB fails
+    if (!isConnected()) {
+      const index = mockStore.findIndex(t => t._id === req.params.id);
+      if (index === -1) {
+        return res.status(404).json({ success: false, error: 'Transaction not found' });
+      }
+
+      const updated = {
+        ...mockStore[index],
+        ...req.body,
+        amount: Number(req.body.amount),
+        _id: mockStore[index]._id,
+        createdAt: mockStore[index].createdAt,
+        updatedAt: new Date()
+      };
+      mockStore[index] = updated;
+      return res.json({ success: true, data: updated, mode: 'mock' });
+    }
     res.status(400).json({ success: false, error: err.message });
   }
 });
@@ -94,9 +205,31 @@ router.put('/:id', validateTransaction, async (req, res) => {
 // DELETE transaction
 router.delete('/:id', async (req, res) => {
   try {
-    await Transaction.findByIdAndDelete(req.params.id);
-    res.json({ success: true, message: 'Deleted' });
+    // Check if MongoDB is connected
+    if (!isConnected()) {
+      // Mock mode - remove from mockStore
+      const index = mockStore.findIndex(t => t._id === req.params.id);
+      if (index === -1) {
+        return res.status(404).json({ success: false, error: 'Transaction not found' });
+      }
+      mockStore.splice(index, 1);
+      return res.json({ success: true, message: 'Deleted', mode: 'mock' });
+    }
+
+    // MongoDB mode
+    const result = await Transaction.findByIdAndDelete(req.params.id);
+    if (!result) return res.status(404).json({ success: false, error: 'Not found' });
+    res.json({ success: true, message: 'Deleted', mode: 'database' });
   } catch (err) {
+    // Fallback to mock mode if DB fails
+    if (!isConnected()) {
+      const index = mockStore.findIndex(t => t._id === req.params.id);
+      if (index === -1) {
+        return res.status(404).json({ success: false, error: 'Transaction not found' });
+      }
+      mockStore.splice(index, 1);
+      return res.json({ success: true, message: 'Deleted', mode: 'mock' });
+    }
     res.status(400).json({ success: false, error: err.message });
   }
 });

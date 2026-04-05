@@ -1,4 +1,4 @@
-import React from 'react';
+import React, { useMemo, useState } from 'react';
 import { useApp } from '../../context/AppContext';
 import { BarChart, Bar, XAxis, YAxis, CartesianGrid, Tooltip, ResponsiveContainer, Cell } from 'recharts';
 import { CATEGORY_COLORS } from '../../data/mockData';
@@ -20,6 +20,24 @@ const CustomBarTooltip = ({ active, payload, label }) => {
 export default function Insights() {
   const { state } = useApp();
   const { insights, transactions } = state;
+  const [chartView, setChartView] = useState('monthly');
+
+  // Compute weekly data from transactions (must be before early return)
+  const weeklyData = useMemo(() => {
+    const map = {};
+    transactions.forEach(t => {
+      const d = new Date(t.date);
+      const year = d.getFullYear();
+      const month = d.getMonth();
+      const weekOfMonth = Math.ceil(d.getDate() / 7);
+      const monthLabel = d.toLocaleString('default', { month: 'short' });
+      const key = `${year}-${month}-W${weekOfMonth}`;
+      const label = `W${weekOfMonth} ${monthLabel}`;
+      if (!map[key]) map[key] = { month: label, key, income: 0, expense: 0 };
+      map[key][t.type] += t.amount;
+    });
+    return Object.values(map).sort((a, b) => a.key.localeCompare(b.key));
+  }, [transactions]);
 
   if (!insights) return <div className="empty-state"><div className="empty-icon">⏳</div><div className="empty-title">Loading...</div></div>;
 
@@ -104,12 +122,38 @@ export default function Insights() {
         </div>
       )}
 
-      {/* Monthly bar chart */}
+      {/* Monthly/Weekly bar chart */}
       <div className="card" style={{ padding: '20px 24px', marginBottom: 16 }}>
-        <h3 className="card-title" style={{ marginBottom: 20 }}>Monthly Income vs Expenses</h3>
-        {monthlyTrend.length > 0 ? (
+        <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', marginBottom: 20 }}>
+          <h3 className="card-title">
+            {chartView === 'monthly' ? 'Monthly Income vs Expenses' : 'Weekly Income vs Expenses'}
+          </h3>
+          <div style={{ display: 'flex', gap: 6 }}>
+            {['monthly', 'weekly'].map(view => (
+              <button
+                key={view}
+                onClick={() => setChartView(view)}
+                style={{
+                  padding: '5px 12px',
+                  fontSize: 12,
+                  fontWeight: 500,
+                  borderRadius: 8,
+                  border: '1px solid var(--border)',
+                  cursor: 'pointer',
+                  textTransform: 'capitalize',
+                  transition: 'all 0.2s',
+                  background: chartView === view ? 'var(--accent)' : 'transparent',
+                  color: chartView === view ? 'white' : 'var(--text-muted)',
+                }}
+              >
+                {view}
+              </button>
+            ))}
+          </div>
+        </div>
+        {(chartView === 'monthly' ? monthlyTrend : weeklyData).length > 0 ? (
           <ResponsiveContainer width="100%" height={260}>
-            <BarChart data={monthlyTrend} margin={{ top: 4, right: 4, left: 0, bottom: 0 }} barGap={4}>
+            <BarChart data={chartView === 'monthly' ? monthlyTrend : weeklyData} margin={{ top: 4, right: 4, left: 0, bottom: 0 }} barGap={4}>
               <CartesianGrid strokeDasharray="3 3" stroke="var(--border)" vertical={false} />
               <XAxis dataKey="month" tick={{ fontSize: 12, fill: 'var(--text-muted)', fontFamily: 'Inter' }} axisLine={false} tickLine={false} />
               <YAxis tick={{ fontSize: 11, fill: 'var(--text-muted)', fontFamily: 'Inter' }} axisLine={false} tickLine={false} tickFormatter={v => `₹${v >= 1000 ? (v / 1000).toFixed(0) + 'k' : v}`} />
@@ -118,7 +162,7 @@ export default function Insights() {
               <Bar dataKey="expense" name="Expense" fill="#ef4444" radius={[6, 6, 0, 0]} maxBarSize={40} />
             </BarChart>
           </ResponsiveContainer>
-        ) : <div className="empty-state"><div className="empty-icon">📊</div><div className="empty-title">No monthly data</div></div>}
+        ) : <div className="empty-state"><div className="empty-icon">📊</div><div className="empty-title">No {chartView} data</div></div>}
       </div>
 
       {/* Category breakdown table */}

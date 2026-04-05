@@ -92,12 +92,15 @@ export default function TransactionModal() {
         return;
       }
 
+      // Check if transaction was saved in mock mode
+      const inMockMode = result.mode === 'mock';
+      
       if (isEdit) {
         dispatch({ type: 'UPDATE_TRANSACTION', payload: result.data });
-        showToast('success', 'Transaction updated!');
+        showToast('success', inMockMode ? 'Transaction updated locally' : 'Transaction updated!');
       } else {
         dispatch({ type: 'ADD_TRANSACTION', payload: result.data });
-        showToast('success', 'Transaction added successfully!');
+        showToast('success', inMockMode ? 'Transaction saved locally' : 'Transaction added successfully!');
       }
       
       setShowSuccess(true);
@@ -107,7 +110,15 @@ export default function TransactionModal() {
       }, 800);
     } catch (err) {
       console.error('Error:', err);
-      showToast('error', 'Error connecting to server. Saving locally...');
+      
+      // Determine error type
+      let errorMessage = 'Error connecting to server. Saving locally...';
+      if (err.message.includes('fetch')) {
+        errorMessage = 'Database unavailable. Saving locally...';
+      }
+      
+      showToast('error', errorMessage);
+      
       // Fallback to local storage
       const data = { ...form, amount: Number(form.amount) };
       if (isEdit) {
