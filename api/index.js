@@ -22,24 +22,31 @@ app.use(cors({
 app.use(express.json());
 app.use(express.urlencoded({ extended: true }));
 
-// Connect to MongoDB
-if (process.env.MONGODB_URI) {
-  mongoose.connect(process.env.MONGODB_URI)
-    .catch(err => console.error('MongoDB connection error:', err));
+// Connect to MongoDB - use MONGO_URI or MONGODB_URI
+const mongoUri = process.env.MONGO_URI || process.env.MONGODB_URI;
+if (mongoUri) {
+  mongoose.connect(mongoUri, {
+    maxPoolSize: 1,
+    serverSelectionTimeoutMS: 5000,
+  }).catch(err => console.error('MongoDB connection error:', err));
 }
 
 // API Routes
-app.use('/auth', authRoutes);
-app.use('/transactions', authMiddleware, transactionRoutes);
-app.use('/insights', authMiddleware, insightsRoutes);
-app.use('/admin', adminRoutes);
+app.use('/api/auth', authRoutes);
+app.use('/api/transactions', authMiddleware, transactionRoutes);
+app.use('/api/insights', authMiddleware, insightsRoutes);
+app.use('/api/admin', adminRoutes);
 
 // Health check
-app.get('/health', (req, res) => {
-  res.json({ status: 'ok' });
+app.get('/api/health', (req, res) => {
+  res.json({ status: 'ok', mongo: mongoose.connection.readyState });
 });
 
-// Export handler for Vercel
-module.exports = (req, res) => {
-  app(req, res);
-};
+// Error handler
+app.use((err, req, res, next) => {
+  console.error('Error:', err);
+  res.status(500).json({ message: err.message || 'Server error' });
+});
+
+// Export for Vercel
+module.exports = app;

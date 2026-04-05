@@ -2,7 +2,7 @@ import React, { createContext, useContext, useReducer, useEffect } from 'react';
 import { mockTransactions } from '../data/mockData';
 
 const AppContext = createContext();
-const API = process.env.REACT_APP_API_URL || 'http://localhost:5000';
+const API = process.env.REACT_APP_API_URL || '/api';
 
 const initialState = {
   transactions: [],
@@ -79,7 +79,7 @@ export function AppProvider({ children }) {
 
   useEffect(() => {
     // Try to load from backend API first
-    fetch(`${API}/api/transactions`)
+    fetch(`${API}/transactions`)
       .then(res => res.json())
       .then(result => {
         if (result.success && result.data) {
