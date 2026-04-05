@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from 'react';
+import React, { useState, useEffect, useCallback } from 'react';
 import axios from 'axios';
 import { useAuth } from '../context/AuthContext';
 import styles from './AdminPanel.module.css';
@@ -13,26 +13,20 @@ const AdminPanel = () => {
   const [activeTab, setActiveTab] = useState('overview');
 
   // Configure axios with token
-  const getHeaders = () => ({
+  const getHeaders = useCallback(() => ({
     'Authorization': `Bearer ${token}`,
     'Content-Type': 'application/json'
-  });
+  }), [token]);
 
   // Fetch admin data
-  useEffect(() => {
-    if (token) {
-      fetchData();
-    }
-  }, [token]);
-
-  const fetchData = async () => {
+  const fetchData = useCallback(async () => {
+    if (!token) return;
     try {
       setLoading(true);
       const [statsRes, usersRes] = await Promise.all([
         axios.get(`http://localhost:5000/api/admin/stats`, { headers: getHeaders() }),
         axios.get(`http://localhost:5000/api/admin/users`, { headers: getHeaders() }),
       ]);
-
       setStats(statsRes.data.data);
       setUsers(usersRes.data.data);
       setError('');
@@ -46,7 +40,11 @@ const AdminPanel = () => {
     } finally {
       setLoading(false);
     }
-  };
+  }, [token, getHeaders]);
+
+  useEffect(() => {
+    fetchData();
+  }, [fetchData]);
 
   const handleRoleChange = async (userId, newRole) => {
     try {
