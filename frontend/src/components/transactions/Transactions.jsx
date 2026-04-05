@@ -51,7 +51,7 @@ export default function Transactions() {
   const deleteTransaction = async (id) => {
     if (window.confirm('Delete this transaction?')) {
       try {
-        const response = await fetch(`http://localhost:5000/api/transactions/${id}`, {
+        const response = await fetch(`/api/transactions/${id}`, {
           method: 'DELETE',
           headers: { 'Content-Type': 'application/json' }
         });
@@ -77,7 +77,7 @@ export default function Transactions() {
       let successCount = 0;
       for (const id of selectedTransactions) {
         try {
-          const response = await fetch(`http://localhost:5000/api/transactions/${id}`, {
+          const response = await fetch(`/api/transactions/${id}`, {
             method: 'DELETE',
             headers: { 'Content-Type': 'application/json' }
           });
