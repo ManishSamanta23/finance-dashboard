@@ -13,6 +13,32 @@ const { protect } = require('../backend/middleware/auth');
 
 const app = express();
 
+// Reuse MongoDB connection across Vercel function invocations.
+const cached = global.mongooseCache || { conn: null, promise: null };
+global.mongooseCache = cached;
+
+const connectToDatabase = async () => {
+  if (cached.conn) return cached.conn;
+
+  const mongoUri = process.env.MONGO_URI || process.env.MONGODB_URI;
+  if (!mongoUri) {
+    throw new Error('Missing MONGO_URI environment variable');
+  }
+
+  if (!cached.promise) {
+    mongoose.set('bufferCommands', false);
+    cached.promise = mongoose.connect(mongoUri, {
+      maxPoolSize: 5,
+      serverSelectionTimeoutMS: 10000,
+      socketTimeoutMS: 20000,
+      bufferCommands: false,
+    });
+  }
+
+  cached.conn = await cached.promise;
+  return cached.conn;
+};
+
 // CORS Configuration
 app.use(cors({
   origin: '*',
@@ -22,16 +48,41 @@ app.use(cors({
 app.use(express.json());
 app.use(express.urlencoded({ extended: true }));
 
-// Connect to MongoDB - use MONGO_URI or MONGODB_URI
-const mongoUri = process.env.MONGO_URI || process.env.MONGODB_URI;
-if (mongoUri) {
-  mongoose.connect(mongoUri, {
-    maxPoolSize: 1,
-    serverSelectionTimeoutMS: 5000,
-  }).catch(err => console.error('MongoDB connection error:', err));
-}
+// Health check (no auth, no DB write)
+app.get('/api/health', async (req, res) => {
+  try {
+    await connectToDatabase();
+    res.json({ status: 'ok', db: 'connected' });
+  } catch (err) {
+    res.status(503).json({ status: 'error', db: 'disconnected', message: err.message });
+  }
+});
 
-// API Routes - Vercel routes /api/* to this handler
+app.get('/health', async (req, res) => {
+  try {
+    await connectToDatabase();
+    res.json({ status: 'ok', db: 'connected' });
+  } catch (err) {
+    res.status(503).json({ status: 'error', db: 'disconnected', message: err.message });
+  }
+});
+
+// Ensure DB connection for all API routes before hitting route handlers.
+app.use(async (req, res, next) => {
+  try {
+    await connectToDatabase();
+    next();
+  } catch (err) {
+    console.error('MongoDB connection error:', err.message);
+    res.status(503).json({
+      success: false,
+      message: 'Database unavailable. Please try again shortly.',
+      error: err.message,
+    });
+  }
+});
+
+// API Routes
 app.use('/api/auth', authRoutes);
 app.use('/auth', authRoutes);
 app.use('/api/transactions', protect, transactionRoutes);
@@ -40,15 +91,6 @@ app.use('/api/insights', protect, insightsRoutes);
 app.use('/insights', protect, insightsRoutes);
 app.use('/api/admin', adminRoutes);
 app.use('/admin', adminRoutes);
-
-// Health check
-app.get('/api/health', (req, res) => {
-  res.json({ status: 'ok' });
-});
-
-app.get('/health', (req, res) => {
-  res.json({ status: 'ok' });
-});
 
 // Error handler middleware
 app.use((err, req, res, next) => {
