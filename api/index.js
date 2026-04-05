@@ -42,4 +42,4 @@ app.get('/health', (req, res) => {
 // Export handler for Vercel
 module.exports = (req, res) => {
   app(req, res);
-};
+}; 
