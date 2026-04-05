@@ -7,9 +7,9 @@ A modern, full-stack finance dashboard built with the **MERN stack** (MongoDB, E
 ## 🚀 Quick Start
 
 ### Prerequisites
-- Node.js v16+
+- Node.js 24.x
 - npm or yarn
-- MongoDB (optional — app automatically falls back to mock data)
+- MongoDB (local or Atlas)
 
 ### Installation
 
@@ -28,7 +28,7 @@ npm run dev
 - Frontend: http://localhost:3000
 - Backend API: http://localhost:5000
 
-> **Using without MongoDB?** The app automatically switches to built-in mock data when MongoDB is unavailable—no setup required.
+> **Using without MongoDB?** The app can still fall back to mock data in development, but login, registration, and saved transactions require MongoDB for the full experience.
 
 ---
 
@@ -36,10 +36,12 @@ npm run dev
 
 Two user roles with distinct permissions:
 
-| Role   | Credentials       | Access Level                       |
-|--------|-------------------|------------------------------------|
-| Admin  | admin / admin123  | Full CRUD access to transactions   |
-| Viewer | viewer / viewer123| Read-only access                   |
+| Role   | Access Level                       |
+|--------|------------------------------------|
+| Admin  | Full dashboard and transaction management |
+| Viewer | Read-only access for dashboard data |
+
+Accounts are created through the registration form. Transactions are scoped to the logged-in user.
 
 ---
 
@@ -54,7 +56,7 @@ Two user roles with distinct permissions:
 ### Transactions Management
 - **Smart filtering**: Search by title/note, filter by type and category
 - **Data organization**: Sortable columns, paginated view
-- **Role-based actions**: Admin users can add, edit, and delete transactions
+- **Account isolation**: Each logged-in user sees only their own transactions
 - **CSV export**: Download transaction data for reporting
 
 ### Financial Insights
@@ -66,7 +68,7 @@ Two user roles with distinct permissions:
 ### User Experience
 - **Dark / Light mode**: Seamless theme switching with persistent preferences
 - **Responsive design**: Optimized for desktop, tablet, and mobile devices
-- **Data persistence**: All preferences and data stored locally
+- **Persistent data**: Preferences stored locally, transactions stored per account
 - **Professional typography**: Carefully selected font stack for financial clarity
 
 ---
@@ -88,12 +90,16 @@ Two user roles with distinct permissions:
 
 | Method | Endpoint              | Purpose                        |
 |--------|----------------------|--------------------------------|
+| POST   | /api/auth/register   | Create a new user              |
 | GET    | /api/transactions    | Retrieve transactions          |
 | POST   | /api/transactions    | Create new transaction         |
 | PUT    | /api/transactions/:id| Update transaction             |
 | DELETE | /api/transactions/:id| Delete transaction             |
 | GET    | /api/insights        | Fetch analytics data           |
 | POST   | /api/auth/login      | User authentication            |
+| GET    | /api/auth/me         | Current logged-in user         |
+| GET    | /api/admin/stats     | Admin statistics               |
+| GET    | /api/admin/users     | Admin user list                |
 | GET    | /api/health          | System health check            |
 
 ---
@@ -109,10 +115,15 @@ finance-dashboard/
 │   │   ├── transactions.js         # CRUD operations
 │   │   ├── auth.js                 # Authentication
 │   │   └── insights.js             # Analytics
+│   ├── middleware/
+│   │   └── auth.js                 # JWT protection helpers
 │   ├── config/
 │   │   ├── mockData.js             # Sample data
 │   │   └── seed.js                 # Database initialization
 │   └── server.js                   # Application entry point
+│
+├── api/
+│   └── index.js                    # Vercel serverless API entry point
 │
 ├── frontend/
 │   └── src/
@@ -136,8 +147,8 @@ finance-dashboard/
 - **CSS Variables**: Dynamic theming with automatic dark/light mode
 - **Context API**: Scalable state management without additional dependencies
 - **Responsive Layout**: Mobile-first approach with adaptive sidebar
-- **Graceful Fallback**: Full functionality with or without database
-- **Persistent Storage**: localStorage for user preferences and offline support
+- **Graceful Fallback**: Development mock mode when the database is unavailable
+- **Persistent Storage**: localStorage for user preferences and per-account transaction cache
 - **Consistent Styling**: Category-based color coding across all visualizations
 
 ---
@@ -155,14 +166,49 @@ finance-dashboard/
 
 ---
 
+## 🚀 Vercel Deployment
+
+This project is deployed as a single Vercel project:
+
+- Live URL: https://finance-dashboard-xi-hazel.vercel.app
+
+- Frontend builds from `frontend/`
+- API runs from `api/index.js`
+- Static assets and SPA routes are handled by `vercel.json`
+
+### Vercel environment variables
+
+Set these in Vercel project settings:
+
+```env
+MONGO_URI=your_mongodb_atlas_connection_string
+JWT_SECRET=your_secure_jwt_secret
+REACT_APP_API_URL=
+```
+
+### MongoDB Atlas
+
+- Add `0.0.0.0/0` to Network Access for Vercel
+- Confirm the database user and password in `MONGO_URI`
+- Redeploy after any secret changes
+
+---
+
 ## 📋 Environment Configuration
 
-Create a `.env` file in the `backend/` directory:
+Create a `.env` file in the `backend/` directory for local development:
 
 ```env
 PORT=5000
 MONGO_URI=mongodb://localhost:27017/finance_dashboard
+JWT_SECRET=your_local_jwt_secret
 NODE_ENV=development
+```
+
+Create `frontend/.env.local` for local frontend API calls:
+
+```env
+REACT_APP_API_URL=http://localhost:5000
 ```
 
 ---
