@@ -1,5 +1,5 @@
 import React, { createContext, useContext, useReducer, useEffect } from 'react';
-import { mockTransactions, mockInsights } from '../data/mockData';
+import { mockTransactions } from '../data/mockData';
 
 const AppContext = createContext();
 const API = process.env.REACT_APP_API_URL || 'http://localhost:5000';

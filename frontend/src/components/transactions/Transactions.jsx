@@ -1,15 +1,13 @@
 import React, { useMemo, useState } from 'react';
 import { useApp } from '../../context/AppContext';
 import { useAuth } from '../../context/AuthContext';
-import { CATEGORIES, CATEGORY_COLORS } from '../../data/mockData';
+import { CATEGORY_COLORS } from '../../data/mockData';
 import TransactionModal from './TransactionModal';
 import QuickAdd from './QuickAdd';
 import TransactionSummary from './TransactionSummary';
 import TransactionCards from './TransactionCard';
 
 const fmt = (n) => new Intl.NumberFormat('en-IN', { style: 'currency', currency: 'INR', maximumFractionDigits: 0 }).format(n);
-
-const SORT_COLS = { date: 'Date', amount: 'Amount', title: 'Title' };
 
 function getCategoryEmoji(cat) {
   const map = { Housing: '🏠', Food: '🍔', Transport: '🚗', Health: '💊', Entertainment: '🎬', Shopping: '🛍️', Utilities: '⚡', Travel: '✈️', Salary: '💼', Freelance: '💻', Investment: '📈', Business: '🏢', Education: '📚', Gift: '🎁', Bonus: '🎉', 'Personal Care': '💅', Insurance: '🛡️', EMI: '📋', Subscription: '📺', 'Other Income': '💰', Other: '💳' };

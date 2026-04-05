@@ -1,6 +1,6 @@
 import React, { useMemo, useState } from 'react';
 import { useApp } from '../../context/AppContext';
-import { BarChart, Bar, XAxis, YAxis, CartesianGrid, Tooltip, ResponsiveContainer, Cell } from 'recharts';
+import { BarChart, Bar, XAxis, YAxis, CartesianGrid, Tooltip, ResponsiveContainer } from 'recharts';
 import { CATEGORY_COLORS } from '../../data/mockData';
 
 const fmt = (n) => new Intl.NumberFormat('en-IN', { style: 'currency', currency: 'INR', maximumFractionDigits: 0 }).format(n);
@@ -41,7 +41,7 @@ export default function Insights() {
 
   if (!insights) return <div className="empty-state"><div className="empty-icon">⏳</div><div className="empty-title">Loading...</div></div>;
 
-  const { totalBalance, totalIncome, totalExpenses, categoryBreakdown, monthlyTrend, highestCategory, savingsRate } = insights;
+  const { totalExpenses, categoryBreakdown, monthlyTrend, highestCategory, savingsRate } = insights;
 
   // Monthly comparison: last 2 months
   const last2 = monthlyTrend.slice(-2);

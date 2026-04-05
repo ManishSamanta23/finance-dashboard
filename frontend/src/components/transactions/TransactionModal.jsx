@@ -1,6 +1,5 @@
 import React, { useState, useEffect, useRef } from 'react';
 import { useApp } from '../../context/AppContext';
-import { CATEGORIES } from '../../data/mockData';
 
 const INCOME_CATEGORIES = ['Salary', 'Freelance', 'Investment', 'Business', 'Gift', 'Bonus', 'Other Income'];
 const EXPENSE_CATEGORIES = ['Housing', 'Food', 'Transport', 'Health', 'Entertainment', 'Shopping', 'Utilities', 'Travel', 'Education', 'Personal Care', 'Insurance', 'EMI', 'Subscription', 'Other'];

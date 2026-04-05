@@ -1,5 +1,4 @@
 import React from 'react';
-import { useApp } from '../../context/AppContext';
 import { CATEGORY_COLORS } from '../../data/mockData';
 
 const fmt = (n) => new Intl.NumberFormat('en-IN', { style: 'currency', currency: 'INR', maximumFractionDigits: 0 }).format(n);
