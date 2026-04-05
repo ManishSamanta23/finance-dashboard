@@ -1,6 +1,6 @@
-# 💹 FinTrack — Finance Dashboard
+# 💹 Finance Dashboard
 
-A full-stack finance dashboard built with the **MERN stack** (MongoDB, Express, React, Node.js). Track income, expenses, and spending patterns with a clean, responsive UI.
+A modern, full-stack finance dashboard built with the **MERN stack** (MongoDB, Express, React, Node.js). Manage transactions, track spending patterns, and gain financial insights with a professional, responsive interface.
 
 ---
 
@@ -9,201 +9,176 @@ A full-stack finance dashboard built with the **MERN stack** (MongoDB, Express, 
 ### Prerequisites
 - Node.js v16+
 - npm or yarn
-- MongoDB (optional — app runs on mock data without it)
+- MongoDB (optional — app automatically falls back to mock data)
 
 ### Installation
 
 ```bash
-# Clone / unzip the project
+# Navigate to project directory
 cd finance-dashboard
 
-# Install all dependencies (root + backend + frontend)
+# Install all dependencies
 npm run install-all
 
-# (Optional) Seed MongoDB with sample data
-npm run seed
-
-# Start both servers concurrently
+# Start development servers
 npm run dev
 ```
 
-- **Frontend**: http://localhost:3000
-- **Backend API**: http://localhost:5000
+**Access the application:**
+- Frontend: http://localhost:3000
+- Backend API: http://localhost:5000
 
-> **No MongoDB?** No problem. The app automatically falls back to built-in mock data stored in localStorage. You get the full experience without any database setup.
+> **Using without MongoDB?** The app automatically switches to built-in mock data when MongoDB is unavailable—no setup required.
 
 ---
 
-## 🔐 Demo Login / Role Switching
+## 🔐 Authentication & Roles
 
-Use the **role switcher** in the sidebar to toggle between:
+Two user roles with distinct permissions:
 
-| Role   | Credentials       | Permissions                        |
+| Role   | Credentials       | Access Level                       |
 |--------|-------------------|------------------------------------|
-| Admin  | admin / admin123  | View + Add + Edit + Delete         |
-| Viewer | viewer / viewer123| View only (read-only UI)           |
-
-Switch roles instantly using the dropdown in the sidebar — no page reload needed.
+| Admin  | admin / admin123  | Full CRUD access to transactions   |
+| Viewer | viewer / viewer123| Read-only access                   |
 
 ---
 
-## ✨ Features
+## ✨ Core Features
 
-### Dashboard Overview
-- **4 Summary Cards**: Net Balance, Total Income, Total Expenses, Savings Rate
-- **Area Chart**: Monthly income vs expense trend (Recharts)
-- **Donut Chart**: Spending breakdown by category
-- **Recent Transactions**: Quick view of last 6 transactions
+### Dashboard
+- **Summary metrics**: Balance, income, expenses, savings rate
+- **Trend analysis**: Monthly income vs. expense visualization
+- **Category breakdown**: Pie chart of spending by category
+- **Recent activity**: Quick view of latest transactions
 
-### Transactions
-- Full filterable, sortable transaction list
-- Search by title or note
-- Filter by type (income/expense) and category
-- Sort by date, amount, or title (asc/desc)
-- Paginated table (10 per page)
-- **Admin only**: Add, edit, delete transactions
-- **Export to CSV** with one click
+### Transactions Management
+- **Smart filtering**: Search by title/note, filter by type and category
+- **Data organization**: Sortable columns, paginated view
+- **Role-based actions**: Admin users can add, edit, and delete transactions
+- **CSV export**: Download transaction data for reporting
 
-### Insights & Analytics
-- Top spending category with visual indicator
-- Savings rate health score with feedback
-- Month-over-month income and expense comparison
-- Monthly grouped bar chart
-- Full category expense breakdown with progress bars
+### Financial Insights
+- **Spending analysis**: Top categories with visual indicators
+- **Health metrics**: Savings rate assessment with personalized feedback
+- **Comparative view**: Month-over-month income and expense trends
+- **Interactive charts**: Toggle between monthly and weekly views
 
-### Role-Based UI (RBAC)
-- Viewer: Read-only dashboard, no edit/delete buttons
-- Admin: Full CRUD access, add transaction button in header
-- Role persisted in localStorage across sessions
-
-### UX & Design
-- 🌙 Dark / Light mode toggle (persisted)
-- 📱 Fully responsive (mobile, tablet, desktop)
-- 💾 Data persisted in localStorage
-- Empty state handling throughout
-- Smooth transitions and micro-animations
-- Custom color-coded categories with emojis
+### User Experience
+- **Dark / Light mode**: Seamless theme switching with persistent preferences
+- **Responsive design**: Optimized for desktop, tablet, and mobile devices
+- **Data persistence**: All preferences and data stored locally
+- **Professional typography**: Carefully selected font stack for financial clarity
 
 ---
 
-## 🗂 Project Structure
+## 🛠 Technology Stack
 
-```
-finance-dashboard/
-├── backend/
-│   ├── models/
-│   │   └── Transaction.js       # Mongoose schema
-│   ├── routes/
-│   │   ├── transactions.js      # CRUD API
-│   │   ├── auth.js              # Role-based login
-│   │   └── insights.js          # Analytics endpoint
-│   ├── config/
-│   │   ├── mockData.js          # Seed/fallback data
-│   │   └── seed.js              # DB seeder script
-│   ├── server.js                # Express app entry
-│   └── .env.example             # Environment variables
-│
-├── frontend/
-│   └── src/
-│       ├── components/
-│       │   ├── layout/
-│       │   │   └── Layout.js        # Sidebar + Topbar shell
-│       │   ├── dashboard/
-│       │   │   ├── Dashboard.js
-│       │   │   ├── SummaryCards.js
-│       │   │   ├── BalanceTrend.js
-│       │   │   ├── SpendingPie.js
-│       │   │   └── RecentTransactions.js
-│       │   ├── transactions/
-│       │   │   ├── Transactions.js
-│       │   │   └── TransactionModal.js
-│       │   └── insights/
-│       │       └── Insights.js
-│       ├── context/
-│       │   └── AppContext.js        # Global state (useReducer)
-│       ├── data/
-│       │   └── mockData.js          # Mock transactions & constants
-│       ├── index.css                # Design system & global styles
-│       ├── App.js
-│       └── index.js
-│
-├── package.json                 # Root scripts (concurrently)
-└── README.md
-```
-
----
-
-## 🛠 Tech Stack
-
-| Layer     | Technology                |
-|-----------|---------------------------|
-| Frontend  | React 18, Recharts        |
-| Styling   | Custom CSS (CSS Variables)|
-| State     | React Context + useReducer|
-| Backend   | Node.js + Express         |
-| Database  | MongoDB + Mongoose        |
-| Fonts     | Syne (headings), DM Sans  |
+| Layer            | Technology                  |
+|------------------|-----------------------------|
+| Frontend         | React 18, Recharts          |
+| Styling          | CSS Variables, Custom CSS   |
+| State Management | React Context + useReducer  |
+| Backend          | Express.js, Node.js         |
+| Database         | MongoDB + Mongoose          |
+| Typography       | Plus Jakarta Sans, Inter, JetBrains Mono |
 
 ---
 
 ## 🌐 API Endpoints
 
-| Method | Endpoint             | Description                        |
-|--------|----------------------|------------------------------------|
-| GET    | /api/transactions    | Get all transactions (with filters)|
-| POST   | /api/transactions    | Create new transaction             |
-| PUT    | /api/transactions/:id| Update transaction                 |
-| DELETE | /api/transactions/:id| Delete transaction                 |
-| GET    | /api/insights        | Get analytics & summary data       |
-| POST   | /api/auth/login      | Simulate role-based login          |
-| GET    | /api/health          | Health check                       |
+| Method | Endpoint              | Purpose                        |
+|--------|----------------------|--------------------------------|
+| GET    | /api/transactions    | Retrieve transactions          |
+| POST   | /api/transactions    | Create new transaction         |
+| PUT    | /api/transactions/:id| Update transaction             |
+| DELETE | /api/transactions/:id| Delete transaction             |
+| GET    | /api/insights        | Fetch analytics data           |
+| POST   | /api/auth/login      | User authentication            |
+| GET    | /api/health          | System health check            |
 
-### Filter params for GET /api/transactions:
+---
+
+## 📁 Project Structure
+
 ```
-?type=expense&category=Food&search=grocery&sortBy=date&order=desc
+finance-dashboard/
+├── backend/
+│   ├── models/
+│   │   └── Transaction.js          # Data schema
+│   ├── routes/
+│   │   ├── transactions.js         # CRUD operations
+│   │   ├── auth.js                 # Authentication
+│   │   └── insights.js             # Analytics
+│   ├── config/
+│   │   ├── mockData.js             # Sample data
+│   │   └── seed.js                 # Database initialization
+│   └── server.js                   # Application entry point
+│
+├── frontend/
+│   └── src/
+│       ├── components/
+│       │   ├── layout/             # App shell
+│       │   ├── dashboard/          # Overview page
+│       │   ├── transactions/       # Transaction management
+│       │   └── insights/           # Analytics page
+│       ├── context/                # State management
+│       ├── data/                   # Constants & mock data
+│       ├── index.css               # Design system
+│       └── App.jsx                 # Root component
+│
+└── package.json                    # Project configuration
 ```
 
 ---
 
-## 📦 Environment Variables
+## 🎨 Design & Architecture
+
+- **CSS Variables**: Dynamic theming with automatic dark/light mode
+- **Context API**: Scalable state management without additional dependencies
+- **Responsive Layout**: Mobile-first approach with adaptive sidebar
+- **Graceful Fallback**: Full functionality with or without database
+- **Persistent Storage**: localStorage for user preferences and offline support
+- **Consistent Styling**: Category-based color coding across all visualizations
+
+---
+
+## 🔧 Development Scripts
+
+| Command               | Description                        |
+|-----------------------|------------------------------------|
+| `npm run install-all` | Install dependencies               |
+| `npm run dev`         | Start both servers concurrently    |
+| `npm run dev:backend` | Backend only                       |
+| `npm run dev:frontend`| Frontend only                      |
+| `npm run seed`        | Populate MongoDB with sample data  |
+| `npm run build`       | Production build                   |
+
+---
+
+## 📋 Environment Configuration
 
 Create a `.env` file in the `backend/` directory:
 
 ```env
 PORT=5000
 MONGO_URI=mongodb://localhost:27017/finance_dashboard
-JWT_SECRET=your_secret_key
 NODE_ENV=development
 ```
 
 ---
 
-## 🎨 Design Decisions
+## 📱 Pages & Views
 
-- **CSS Variables** for theming — clean dark/light mode with zero JS
-- **useReducer + Context** for scalable state management without external libs
-- **localStorage persistence** — transactions and preferences survive page refresh
-- **Graceful degradation** — works without MongoDB using mock data
-- **Mobile-first** — sidebar collapses on mobile with overlay
-- **Color system** — each category has a consistent color across all charts
+1. **Dashboard** — Summary cards, trends, and category breakdown
+2. **Transactions** — Complete transaction list with filtering and management
+3. **Insights** — Detailed analytics and financial health assessment
 
 ---
 
-## 📸 Pages
+## 🌟 Key Improvements
 
-1. **Dashboard** — Overview with summary cards and charts
-2. **Transactions** — Full list with search, filter, sort, export
-3. **Insights** — Deep analytics with comparisons and breakdowns
-
----
-
-## 🔧 Scripts
-
-| Command               | Description                       |
-|-----------------------|-----------------------------------|
-| `npm run install-all` | Install all dependencies          |
-| `npm run dev`         | Start frontend + backend together |
-| `npm run dev:backend` | Start only the backend            |
-| `npm run dev:frontend`| Start only the frontend           |
-| `npm run seed`        | Seed MongoDB with sample data     |
-| `npm run build`       | Build frontend for production     |
+- **Professional typography system** with optimized font selection for financial clarity
+- **Automatic database fallback** for zero-friction development and testing
+- **Dark mode optimization** with refined chart and tooltip styling
+- **Role-based access control** with intuitive permission enforcement
+- **Advanced filtering and sorting** for detailed transaction analysis

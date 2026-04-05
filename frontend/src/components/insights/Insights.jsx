@@ -153,13 +153,13 @@ export default function Insights() {
         </div>
         {(chartView === 'monthly' ? monthlyTrend : weeklyData).length > 0 ? (
           <ResponsiveContainer width="100%" height={260}>
-            <BarChart data={chartView === 'monthly' ? monthlyTrend : weeklyData} margin={{ top: 4, right: 4, left: 0, bottom: 0 }} barGap={4}>
+            <BarChart data={chartView === 'monthly' ? monthlyTrend : weeklyData} margin={{ top: 4, right: 4, left: 0, bottom: 0 }} barGap={4} style={{ background: 'transparent' }}>
               <CartesianGrid strokeDasharray="3 3" stroke="var(--border)" vertical={false} />
               <XAxis dataKey="month" tick={{ fontSize: 12, fill: 'var(--text-muted)', fontFamily: 'Inter' }} axisLine={false} tickLine={false} />
               <YAxis tick={{ fontSize: 11, fill: 'var(--text-muted)', fontFamily: 'Inter' }} axisLine={false} tickLine={false} tickFormatter={v => `₹${v >= 1000 ? (v / 1000).toFixed(0) + 'k' : v}`} />
-              <Tooltip content={<CustomBarTooltip />} />
-              <Bar dataKey="income" name="Income" fill="#10b981" radius={[6, 6, 0, 0]} maxBarSize={40} />
-              <Bar dataKey="expense" name="Expense" fill="#ef4444" radius={[6, 6, 0, 0]} maxBarSize={40} />
+              <Tooltip content={<CustomBarTooltip />} cursor={{ fill: 'transparent' }} />
+              <Bar dataKey="income" name="Income" fill="#10b981" radius={[6, 6, 0, 0]} maxBarSize={40} cursor="default" />
+              <Bar dataKey="expense" name="Expense" fill="#ef4444" radius={[6, 6, 0, 0]} maxBarSize={40} cursor="default" />
             </BarChart>
           </ResponsiveContainer>
         ) : <div className="empty-state"><div className="empty-icon">📊</div><div className="empty-title">No {chartView} data</div></div>}
