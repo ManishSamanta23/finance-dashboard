@@ -1,5 +1,6 @@
 import React, { useState, useEffect, useRef } from 'react';
 import { useApp } from '../../context/AppContext';
+import { useAuth } from '../../context/AuthContext';
 
 const INCOME_CATEGORIES = ['Salary', 'Freelance', 'Investment', 'Business', 'Gift', 'Bonus', 'Other Income'];
 const EXPENSE_CATEGORIES = ['Housing', 'Food', 'Transport', 'Health', 'Entertainment', 'Shopping', 'Utilities', 'Travel', 'Education', 'Personal Care', 'Insurance', 'EMI', 'Subscription', 'Other'];
@@ -7,6 +8,7 @@ const API = process.env.REACT_APP_API_URL || '';
 
 export default function TransactionModal() {
   const { state, dispatch, showToast } = useApp();
+  const { token } = useAuth();
   const isEdit = !!state.editTransaction;
   const tx = state.editTransaction;
 
@@ -69,13 +71,17 @@ export default function TransactionModal() {
 
     setLoading(true);
     try {
+      const authToken = token || localStorage.getItem('fd_token');
       const data = { ...form, amount: Number(form.amount) };
       const url = isEdit ? `${API}/api/transactions/${tx._id}` : `${API}/api/transactions`;
       const method = isEdit ? 'PUT' : 'POST';
       
       const response = await fetch(url, {
         method,
-        headers: { 'Content-Type': 'application/json' },
+        headers: {
+          'Content-Type': 'application/json',
+          ...(authToken ? { Authorization: `Bearer ${authToken}` } : {}),
+        },
         body: JSON.stringify(data)
       });
 

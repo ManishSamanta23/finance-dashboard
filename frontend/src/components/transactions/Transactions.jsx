@@ -16,7 +16,7 @@ function getCategoryEmoji(cat) {
 
 export default function Transactions() {
   const { state, dispatch, showToast } = useApp();
-  const { user } = useAuth();
+  const { user, token } = useAuth();
   const { transactions, filters, showModal, viewMode, selectedTransactions } = state;
   const role = user?.role || 'viewer';
   const [page, setPage] = useState(1);
@@ -51,9 +51,13 @@ export default function Transactions() {
   const deleteTransaction = async (id) => {
     if (window.confirm('Delete this transaction?')) {
       try {
+        const authToken = token || localStorage.getItem('fd_token');
         const response = await fetch(`/api/transactions/${id}`, {
           method: 'DELETE',
-          headers: { 'Content-Type': 'application/json' }
+          headers: {
+            'Content-Type': 'application/json',
+            ...(authToken ? { Authorization: `Bearer ${authToken}` } : {}),
+          }
         });
         
         if (response.ok) {
@@ -75,11 +79,15 @@ export default function Transactions() {
   const deleteSelectedTransactions = async () => {
     if (window.confirm(`Delete ${selectedTransactions.length} transaction(s)?`)) {
       let successCount = 0;
+      const authToken = token || localStorage.getItem('fd_token');
       for (const id of selectedTransactions) {
         try {
           const response = await fetch(`/api/transactions/${id}`, {
             method: 'DELETE',
-            headers: { 'Content-Type': 'application/json' }
+            headers: {
+              'Content-Type': 'application/json',
+              ...(authToken ? { Authorization: `Bearer ${authToken}` } : {}),
+            }
           });
           
           if (response.ok) {
