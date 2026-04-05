@@ -9,7 +9,7 @@ const insightsRoutes = require('../backend/routes/insights');
 const adminRoutes = require('../backend/routes/admin');
 
 // Middleware
-const authMiddleware = require('../backend/middleware/auth');
+const { protect } = require('../backend/middleware/auth');
 
 const app = express();
 
@@ -33,12 +33,20 @@ if (mongoUri) {
 
 // API Routes - Vercel routes /api/* to this handler
 app.use('/api/auth', authRoutes);
-app.use('/api/transactions', authMiddleware, transactionRoutes);
-app.use('/api/insights', authMiddleware, insightsRoutes);
+app.use('/auth', authRoutes);
+app.use('/api/transactions', protect, transactionRoutes);
+app.use('/transactions', protect, transactionRoutes);
+app.use('/api/insights', protect, insightsRoutes);
+app.use('/insights', protect, insightsRoutes);
 app.use('/api/admin', adminRoutes);
+app.use('/admin', adminRoutes);
 
 // Health check
 app.get('/api/health', (req, res) => {
+  res.json({ status: 'ok' });
+});
+
+app.get('/health', (req, res) => {
   res.json({ status: 'ok' });
 });
 
