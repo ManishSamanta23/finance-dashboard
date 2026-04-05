@@ -33,6 +33,15 @@ const userSchema = new mongoose.Schema(
       type: Boolean,
       default: true,
     },
+    deletedMockIds: {
+      type: [String],
+      default: []
+    },
+    editedMockIds: {
+      type: Map,
+      of: mongoose.Schema.Types.Mixed,
+      default: new Map()
+    },
     createdAt: {
       type: Date,
       default: Date.now,

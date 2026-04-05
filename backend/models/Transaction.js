@@ -11,7 +11,8 @@ const transactionSchema = new mongoose.Schema({
   tags: { type: [String], default: [] },
   isRecurring: { type: Boolean, default: false },
   recurringFrequency: { type: String, enum: ['', 'daily', 'weekly', 'monthly', 'yearly'], default: '' },
-  createdBy: { type: String, required: true, index: true }
+  owner: { type: String, required: true, index: true },
+  isMock: { type: Boolean, default: false, index: true }
 }, { timestamps: true });
 
 module.exports = mongoose.model('Transaction', transactionSchema);

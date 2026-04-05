@@ -46,6 +46,14 @@ const AdminPanel = () => {
     fetchData();
   }, [fetchData]);
 
+  // Currency formatter for Indian Rupees
+  const fmt = (amount) => 
+    new Intl.NumberFormat('en-IN', { 
+      style: 'currency', 
+      currency: 'INR', 
+      maximumFractionDigits: 0 
+    }).format(amount);
+
   const handleRoleChange = async (userId, newRole) => {
     try {
       await axios.put(`http://localhost:5000/api/admin/users/${userId}/role`, 
@@ -149,19 +157,19 @@ const AdminPanel = () => {
             <div className={styles.statCard}>
               <div className={styles.statLabel}>Net Balance</div>
               <div className={`${styles.statValue} ${stats.netBalance >= 0 ? styles.positive : styles.negative}`}>
-                ${stats.netBalance.toFixed(2)}
+                {fmt(stats.netBalance)}
               </div>
             </div>
             <div className={styles.statCard}>
               <div className={styles.statLabel}>Total Income</div>
               <div className={`${styles.statValue} ${styles.positive}`}>
-                ${stats.totalIncome.toFixed(2)}
+                {fmt(stats.totalIncome)}
               </div>
             </div>
             <div className={styles.statCard}>
               <div className={styles.statLabel}>Total Expenses</div>
               <div className={`${styles.statValue} ${styles.negative}`}>
-                ${stats.totalExpenses.toFixed(2)}
+                {fmt(stats.totalExpenses)}
               </div>
             </div>
           </div>

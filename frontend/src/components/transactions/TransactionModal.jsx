@@ -70,73 +70,82 @@ export default function TransactionModal() {
     }
 
     setLoading(true);
+
+    const data = {
+      title: form.title.trim(),
+      amount: Number(form.amount),
+      type: form.type,
+      category: form.category,
+      date: form.date,
+      note: form.note.trim(),
+    };
+
     try {
-      const authToken = token || localStorage.getItem('fd_token');
-      const data = { ...form, amount: Number(form.amount) };
-      const url = isEdit ? `${API}/api/transactions/${tx._id}` : `${API}/api/transactions`;
-      const method = isEdit ? 'PUT' : 'POST';
-      
-      const response = await fetch(url, {
-        method,
-        headers: {
-          'Content-Type': 'application/json',
-          ...(authToken ? { Authorization: `Bearer ${authToken}` } : {}),
-        },
-        body: JSON.stringify(data)
+      let savedTransaction;
+
+      if (isEdit) {
+        // Update existing transaction in database
+        const response = await fetch(
+          `http://localhost:5000/api/transactions/${tx._id}`,
+          {
+            method: 'PUT',
+            headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify(data),
+          }
+        );
+        const result = await response.json();
+        if (!result.success) throw new Error(result.error);
+        savedTransaction = result.data;
+        dispatch({ 
+          type: 'UPDATE_TRANSACTION', 
+          payload: savedTransaction 
+        });
+      } else {
+        // Create new transaction in database
+        const response = await fetch(
+          'http://localhost:5000/api/transactions',
+          {
+            method: 'POST',
+            headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify(data),
+          }
+        );
+        const result = await response.json();
+        if (!result.success) throw new Error(result.error);
+        savedTransaction = result.data;
+        dispatch({ 
+          type: 'ADD_TRANSACTION', 
+          payload: savedTransaction 
+        });
+      }
+
+      // Show success toast
+      dispatch({
+        type: 'ADD_TOAST',
+        payload: {
+          id: Date.now(),
+          type: 'success',
+          message: isEdit 
+            ? 'Transaction updated successfully!' 
+            : 'Transaction added successfully!'
+        }
       });
 
-      const result = await response.json();
-      
-      if (!response.ok) {
-        if (result.errors) {
-          const errorMsg = Object.values(result.errors)[0];
-          showToast('error', errorMsg || 'Failed to save transaction');
-        } else {
-          showToast('error', result.error || 'Failed to save transaction');
-        }
-        setLoading(false);
-        return;
-      }
+      // Close modal
+      dispatch({ type: 'SET_MODAL', payload: false });
 
-      // Check if transaction was saved in mock mode
-      const inMockMode = result.mode === 'mock';
-      
-      if (isEdit) {
-        dispatch({ type: 'UPDATE_TRANSACTION', payload: result.data });
-        showToast('success', inMockMode ? 'Transaction updated locally' : 'Transaction updated!');
-      } else {
-        dispatch({ type: 'ADD_TRANSACTION', payload: result.data });
-        showToast('success', inMockMode ? 'Transaction saved locally' : 'Transaction added successfully!');
-      }
-      
-      setShowSuccess(true);
+    } catch (error) {
+      console.error('Failed to save transaction:', error);
+      dispatch({
+        type: 'ADD_TOAST',
+        payload: {
+          id: Date.now(),
+          type: 'error',
+          message: 'Failed to save. Please check your connection.'
+        }
+      });
+    } finally {
       setLoading(false);
-      setTimeout(() => {
-        dispatch({ type: 'SET_MODAL', payload: false });
-      }, 800);
-    } catch (err) {
-      console.error('Error:', err);
-      
-      // Determine error type
-      let errorMessage = 'Error connecting to server. Saving locally...';
-      if (err.message.includes('fetch')) {
-        errorMessage = 'Database unavailable. Saving locally...';
-      }
-      
-      showToast('error', errorMessage);
-      
-      // Fallback to local storage
-      const data = { ...form, amount: Number(form.amount) };
-      if (isEdit) {
-        dispatch({ type: 'UPDATE_TRANSACTION', payload: { ...tx, ...data } });
-      } else {
-        dispatch({ type: 'ADD_TRANSACTION', payload: { ...data, _id: Date.now().toString() } });
-      }
-      setShowSuccess(true);
-      setLoading(false);
-      setTimeout(() => {
-        dispatch({ type: 'SET_MODAL', payload: false });
-      }, 800);
     }
   };
 

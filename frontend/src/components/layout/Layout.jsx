@@ -140,15 +140,6 @@ export default function Layout({ children }) {
           </div>
 
           <div className="topbar-actions">
-            {state.role === 'admin' && state.activeTab === 'transactions' && (
-              <button
-                className="btn btn-primary"
-                onClick={() => dispatch({ type: 'SET_MODAL', payload: true })}
-              >
-                + Add Transaction
-              </button>
-            )}
-
             <button
               className="icon-btn"
               onClick={() => dispatch({ type: 'TOGGLE_DARK' })}

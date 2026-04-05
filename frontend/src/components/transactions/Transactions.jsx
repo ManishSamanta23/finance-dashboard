@@ -164,13 +164,11 @@ export default function Transactions() {
           )}
 
           <div style={{ marginLeft: 'auto', display: 'flex', gap: 8 }}>
-            {role === 'admin' && (
-              <button className="btn btn-primary" onClick={() => {
-                if (!showModal) dispatch({ type: 'SET_MODAL', payload: true });
-              }}>
-                + Add Transaction
-              </button>
-            )}
+            <button className="btn btn-primary" onClick={() => {
+              if (!showModal) dispatch({ type: 'SET_MODAL', payload: true });
+            }}>
+              + Add Transaction
+            </button>
             
             <div className="view-toggle">
               <button

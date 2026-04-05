@@ -76,49 +76,34 @@ export function AppProvider({ children }) {
   const [state, dispatch] = useReducer(reducer, initialState);
   const { token, user, isAuthenticated } = useAuth();
 
-  const getTransactionStorageKey = (userId) => `fd_transactions_${userId || 'guest'}`;
-
   useEffect(() => {
-    const loadLocalData = () => {
-      const saved = localStorage.getItem(getTransactionStorageKey(user?.id));
-      const transactions = saved ? JSON.parse(saved) : mockTransactions;
-      dispatch({ type: 'SET_TRANSACTIONS', payload: transactions });
-      dispatch({ type: 'SET_INSIGHTS', payload: computeInsights(transactions) });
-    };
-
-    if (!isAuthenticated || !token) {
-      loadLocalData();
-      return;
-    }
-
-    fetch(`${API}/api/transactions`, {
-      headers: {
-        Authorization: `Bearer ${token}`,
-      },
-    })
-      .then(res => {
-        if (!res.ok) throw new Error('Failed to fetch transactions');
-        return res.json();
-      })
-      .then(result => {
-        if (result.success && result.data) {
+    const loadFromAPI = async () => {
+      try {
+        const response = await fetch(`http://localhost:5000/api/transactions`);
+        const result = await response.json();
+        if (result.success && result.data.length > 0) {
           dispatch({ type: 'SET_TRANSACTIONS', payload: result.data });
           dispatch({ type: 'SET_INSIGHTS', payload: computeInsights(result.data) });
         } else {
-          loadLocalData();
+          // API returned empty — fallback to mock data
+          dispatch({ type: 'SET_TRANSACTIONS', payload: mockTransactions });
+          dispatch({ type: 'SET_INSIGHTS', payload: computeInsights(mockTransactions) });
         }
-      })
-      .catch(() => {
-        loadLocalData();
-      });
-  }, [token, user?.id, isAuthenticated]);
+      } catch (error) {
+        console.error('Error loading from API, fallback to mock data:', error);
+        // API not available — use mock data
+        dispatch({ type: 'SET_TRANSACTIONS', payload: mockTransactions });
+        dispatch({ type: 'SET_INSIGHTS', payload: computeInsights(mockTransactions) });
+      }
+    };
 
-  useEffect(() => {
-    localStorage.setItem(
-      getTransactionStorageKey(user?.id),
-      JSON.stringify(state.transactions)
-    );
-  }, [state.transactions, user?.id]);
+    if (isAuthenticated) {
+      loadFromAPI();
+    } else {
+      dispatch({ type: 'SET_TRANSACTIONS', payload: mockTransactions });
+      dispatch({ type: 'SET_INSIGHTS', payload: computeInsights(mockTransactions) });
+    }
+  }, [isAuthenticated, user?.id]);
 
   useEffect(() => {
     dispatch({ type: 'SET_INSIGHTS', payload: computeInsights(state.transactions) });
