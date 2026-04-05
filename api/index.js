@@ -18,7 +18,14 @@ const cached = global.mongooseCache || { conn: null, promise: null };
 global.mongooseCache = cached;
 
 const connectToDatabase = async () => {
-  if (cached.conn) return cached.conn;
+  if (cached.conn && mongoose.connection.readyState === 1) {
+    return cached.conn;
+  }
+
+  // Drop stale connection reference if connection is no longer active.
+  if (mongoose.connection.readyState !== 1) {
+    cached.conn = null;
+  }
 
   const mongoUri = process.env.MONGO_URI || process.env.MONGODB_URI;
   if (!mongoUri) {
@@ -32,6 +39,11 @@ const connectToDatabase = async () => {
       serverSelectionTimeoutMS: 10000,
       socketTimeoutMS: 20000,
       bufferCommands: false,
+    }).catch((err) => {
+      // Allow future retries after a failed connection attempt.
+      cached.promise = null;
+      cached.conn = null;
+      throw err;
     });
   }
 
