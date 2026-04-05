@@ -15,7 +15,7 @@ const app = express();
 
 // CORS Configuration
 app.use(cors({
-  origin: process.env.FRONTEND_URL || '*',
+  origin: '*',
   credentials: true
 }));
 
@@ -31,7 +31,7 @@ if (mongoUri) {
   }).catch(err => console.error('MongoDB connection error:', err));
 }
 
-// API Routes
+// API Routes - Vercel routes /api/* to this handler
 app.use('/api/auth', authRoutes);
 app.use('/api/transactions', authMiddleware, transactionRoutes);
 app.use('/api/insights', authMiddleware, insightsRoutes);
@@ -39,13 +39,16 @@ app.use('/api/admin', adminRoutes);
 
 // Health check
 app.get('/api/health', (req, res) => {
-  res.json({ status: 'ok', mongo: mongoose.connection.readyState });
+  res.json({ status: 'ok' });
 });
 
-// Error handler
+// Error handler middleware
 app.use((err, req, res, next) => {
-  console.error('Error:', err);
-  res.status(500).json({ message: err.message || 'Server error' });
+  console.error('API Error:', err);
+  res.status(err.status || 500).json({ 
+    message: err.message || 'Server error',
+    success: false
+  });
 });
 
 // Export for Vercel
