@@ -28,12 +28,14 @@ export const AuthProvider = ({ children }) => {
   }, []);
 
   // Register function
-  const register = async (name, email, password) => {
+  const register = async (name, email, password, role = 'viewer', adminCode = '') => {
     try {
       const response = await axios.post(`${API}/api/auth/register`, {
         name,
         email,
         password,
+        role,
+        adminCode,
       });
 
       const { token: newToken, user: newUser } = response.data;
@@ -59,7 +61,7 @@ export const AuthProvider = ({ children }) => {
   };
 
   // Login function
-  const login = async (email, password) => {
+  const login = async (email, password, expectedRole = null) => {
     try {
       const response = await axios.post(`${API}/api/auth/login`, {
         email,
@@ -67,6 +69,14 @@ export const AuthProvider = ({ children }) => {
       });
 
       const { token: newToken, user: newUser } = response.data;
+
+      if (expectedRole && newUser.role !== expectedRole) {
+        throw new Error(
+          expectedRole === 'admin'
+            ? 'This is not an admin account.'
+            : 'This account is not a viewer account.'
+        );
+      }
 
       // Save to localStorage
       localStorage.setItem('fd_token', newToken);

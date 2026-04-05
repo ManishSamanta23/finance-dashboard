@@ -2,6 +2,7 @@ const express = require('express');
 const router = express.Router();
 const Transaction = require('../models/Transaction');
 const { isConnected } = require('../config/db');
+const { adminOnly } = require('../middleware/auth');
 
 // Mock data fallback
 const mockTransactions = require('../config/mockData');
@@ -135,7 +136,7 @@ router.get('/', async (req, res) => {
 });
 
 // POST create transaction
-router.post('/', validateTransaction, async (req, res) => {
+router.post('/', adminOnly, validateTransaction, async (req, res) => {
   try {
     const userId = getUserId(req);
 
@@ -192,7 +193,7 @@ router.post('/', validateTransaction, async (req, res) => {
 });
 
 // PUT update transaction
-router.put('/:id', validateTransaction, async (req, res) => {
+router.put('/:id', adminOnly, validateTransaction, async (req, res) => {
   try {
     const userId = getUserId(req);
 
@@ -252,7 +253,7 @@ router.put('/:id', validateTransaction, async (req, res) => {
 });
 
 // DELETE transaction
-router.delete('/:id', async (req, res) => {
+router.delete('/:id', adminOnly, async (req, res) => {
   try {
     const userId = getUserId(req);
 

@@ -6,6 +6,7 @@ import styles from './Auth.module.css';
 const Login = () => {
   const [email, setEmail] = useState('');
   const [password, setPassword] = useState('');
+  const [loginMode, setLoginMode] = useState('viewer');
   const [showPassword, setShowPassword] = useState(false);
   const [error, setError] = useState('');
   const [loading, setLoading] = useState(false);
@@ -35,8 +36,9 @@ const Login = () => {
     setLoading(true);
 
     try {
-      await login(email, password);
-      navigate('/dashboard');
+      const result = await login(email, password, loginMode === 'admin' ? 'admin' : null);
+      const destination = result?.user?.role === 'admin' ? '/admin' : '/dashboard';
+      navigate(destination);
     } catch (err) {
       setError(err.message || 'Login failed');
     } finally {
@@ -50,6 +52,22 @@ const Login = () => {
         <div className={styles.logo}>💰 FinTrack</div>
         <h1 className={styles.title}>Welcome Back</h1>
         <p className={styles.subtitle}>Sign in to your account</p>
+
+        <div className={styles.formGroup} style={{ marginBottom: 16 }}>
+          <label htmlFor="loginMode" className={styles.label}>
+            Login As
+          </label>
+          <select
+            id="loginMode"
+            className={styles.input}
+            value={loginMode}
+            onChange={(e) => setLoginMode(e.target.value)}
+            disabled={loading}
+          >
+            <option value="viewer">Viewer Login</option>
+            <option value="admin">Admin Login</option>
+          </select>
+        </div>
 
         <form onSubmit={handleSubmit} className={styles.form}>
           {error && <div className={styles.errorMessage}>{error}</div>}

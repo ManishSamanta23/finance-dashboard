@@ -16,7 +16,7 @@ const generateToken = (id, role) => {
 // @access  Public
 router.post('/register', async (req, res) => {
   try {
-    const { name, email, password } = req.body;
+    const { name, email, password, role = 'viewer', adminCode } = req.body;
 
     // Validate input
     if (!name || !email || !password) {
@@ -27,10 +27,30 @@ router.post('/register', async (req, res) => {
       return res.status(400).json({ message: 'Password must be at least 6 characters' });
     }
 
+    if (!['viewer', 'admin'].includes(role)) {
+      return res.status(400).json({ message: 'Invalid role. Must be viewer or admin.' });
+    }
+
     // Check if email already exists
     const existingUser = await User.findOne({ email: email.toLowerCase() });
     if (existingUser) {
       return res.status(400).json({ message: 'Email already registered' });
+    }
+
+    let assignedRole = 'viewer';
+    if (role === 'admin') {
+      const existingAdminCount = await User.countDocuments({ role: 'admin' });
+      const adminRegistrationCode = process.env.ADMIN_REGISTRATION_CODE;
+
+      if (existingAdminCount === 0) {
+        assignedRole = 'admin';
+      } else if (adminRegistrationCode && adminCode === adminRegistrationCode) {
+        assignedRole = 'admin';
+      } else {
+        return res.status(403).json({
+          message: 'Admin registration is restricted. Contact an existing admin.'
+        });
+      }
     }
 
     // Create user
@@ -38,7 +58,7 @@ router.post('/register', async (req, res) => {
       name,
       email: email.toLowerCase(),
       password,
-      role: 'viewer',
+      role: assignedRole,
     });
 
     // Generate token

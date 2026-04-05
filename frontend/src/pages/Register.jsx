@@ -6,6 +6,8 @@ import styles from './Auth.module.css';
 const Register = () => {
   const [name, setName] = useState('');
   const [email, setEmail] = useState('');
+  const [accountType, setAccountType] = useState('viewer');
+  const [adminCode, setAdminCode] = useState('');
   const [password, setPassword] = useState('');
   const [confirmPassword, setConfirmPassword] = useState('');
   const [showPassword, setShowPassword] = useState(false);
@@ -39,6 +41,10 @@ const Register = () => {
       newErrors.confirmPassword = 'Passwords do not match';
     }
 
+    if (accountType === 'admin' && !adminCode.trim()) {
+      newErrors.adminCode = 'Admin code is required for admin registration';
+    }
+
     return newErrors;
   };
 
@@ -55,8 +61,9 @@ const Register = () => {
     setLoading(true);
 
     try {
-      await register(name, email, password);
-      navigate('/dashboard');
+      const result = await register(name, email, password, accountType, adminCode);
+      const destination = result?.user?.role === 'admin' ? '/admin' : '/dashboard';
+      navigate(destination);
     } catch (err) {
       setErrors({ submit: err.message || 'Registration failed' });
     } finally {
@@ -70,6 +77,22 @@ const Register = () => {
         <div className={styles.logo}>💰 FinTrack</div>
         <h1 className={styles.title}>Create Account</h1>
         <p className={styles.subtitle}>Join FinTrack today</p>
+
+        <div className={styles.formGroup} style={{ marginBottom: 16 }}>
+          <label htmlFor="accountType" className={styles.label}>
+            Register As
+          </label>
+          <select
+            id="accountType"
+            className={styles.input}
+            value={accountType}
+            onChange={(e) => setAccountType(e.target.value)}
+            disabled={loading}
+          >
+            <option value="viewer">Viewer Account</option>
+            <option value="admin">Admin Account</option>
+          </select>
+        </div>
 
         <form onSubmit={handleSubmit} className={styles.form}>
           {errors.submit && (
@@ -111,6 +134,26 @@ const Register = () => {
               <span className={styles.fieldError}>{errors.email}</span>
             )}
           </div>
+
+          {accountType === 'admin' && (
+            <div className={styles.formGroup}>
+              <label htmlFor="adminCode" className={styles.label}>
+                Admin Registration Code
+              </label>
+              <input
+                id="adminCode"
+                type="password"
+                className={`${styles.input} ${errors.adminCode ? styles.inputError : ''}`}
+                placeholder="Enter admin code"
+                value={adminCode}
+                onChange={(e) => setAdminCode(e.target.value)}
+                disabled={loading}
+              />
+              {errors.adminCode && (
+                <span className={styles.fieldError}>{errors.adminCode}</span>
+              )}
+            </div>
+          )}
 
           <div className={styles.formGroup}>
             <label htmlFor="password" className={styles.label}>
