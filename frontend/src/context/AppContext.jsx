@@ -78,30 +78,39 @@ export function AppProvider({ children }) {
   const [state, dispatch] = useReducer(reducer, initialState);
 
   useEffect(() => {
-    // Try to load from backend API first
-    fetch(`${API}/api/transactions`)
-      .then(res => res.json())
+    const loadLocalData = () => {
+      const saved = localStorage.getItem('fd_transactions');
+      const transactions = saved ? JSON.parse(saved) : mockTransactions;
+      dispatch({ type: 'SET_TRANSACTIONS', payload: transactions });
+      dispatch({ type: 'SET_INSIGHTS', payload: computeInsights(transactions) });
+    };
+
+    const token = localStorage.getItem('fd_token');
+    if (!token) {
+      loadLocalData();
+      return;
+    }
+
+    fetch(`${API}/api/transactions`, {
+      headers: {
+        Authorization: `Bearer ${token}`,
+      },
+    })
+      .then(res => {
+        if (!res.ok) throw new Error('Failed to fetch transactions');
+        return res.json();
+      })
       .then(result => {
         if (result.success && result.data) {
           dispatch({ type: 'SET_TRANSACTIONS', payload: result.data });
           dispatch({ type: 'SET_INSIGHTS', payload: computeInsights(result.data) });
-          // Update localStorage with backend data
           localStorage.setItem('fd_transactions', JSON.stringify(result.data));
         } else {
-          // Fallback to localStorage or mock data
-          const saved = localStorage.getItem('fd_transactions');
-          const transactions = saved ? JSON.parse(saved) : mockTransactions;
-          dispatch({ type: 'SET_TRANSACTIONS', payload: transactions });
-          dispatch({ type: 'SET_INSIGHTS', payload: computeInsights(transactions) });
+          loadLocalData();
         }
       })
-      .catch(err => {
-        console.log('Backend unavailable, using local data');
-        // Fallback to localStorage or mock data if API fails
-        const saved = localStorage.getItem('fd_transactions');
-        const transactions = saved ? JSON.parse(saved) : mockTransactions;
-        dispatch({ type: 'SET_TRANSACTIONS', payload: transactions });
-        dispatch({ type: 'SET_INSIGHTS', payload: computeInsights(transactions) });
+      .catch(() => {
+        loadLocalData();
       });
   }, []);
 
