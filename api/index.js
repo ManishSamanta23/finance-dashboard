@@ -1,10 +1,6 @@
 const express = require('express');
 const cors = require('cors');
-const dotenv = require('dotenv');
 const mongoose = require('mongoose');
-
-// Load environment variables
-dotenv.config();
 
 // Import routes
 const authRoutes = require('../backend/routes/auth');
@@ -33,15 +29,17 @@ if (process.env.MONGODB_URI) {
 }
 
 // API Routes
-app.use('/api/auth', authRoutes);
-app.use('/api/transactions', authMiddleware, transactionRoutes);
-app.use('/api/insights', authMiddleware, insightsRoutes);
-app.use('/api/admin', adminRoutes);
+app.use('/auth', authRoutes);
+app.use('/transactions', authMiddleware, transactionRoutes);
+app.use('/insights', authMiddleware, insightsRoutes);
+app.use('/admin', adminRoutes);
 
 // Health check
-app.get('/api/health', (req, res) => {
+app.get('/health', (req, res) => {
   res.json({ status: 'ok' });
 });
 
-// Export for Vercel
-module.exports = app;
+// Export handler for Vercel
+module.exports = (req, res) => {
+  app(req, res);
+};

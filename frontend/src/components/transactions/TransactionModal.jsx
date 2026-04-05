@@ -4,6 +4,7 @@ import { CATEGORIES } from '../../data/mockData';
 
 const INCOME_CATEGORIES = ['Salary', 'Freelance', 'Investment', 'Business', 'Gift', 'Bonus', 'Other Income'];
 const EXPENSE_CATEGORIES = ['Housing', 'Food', 'Transport', 'Health', 'Entertainment', 'Shopping', 'Utilities', 'Travel', 'Education', 'Personal Care', 'Insurance', 'EMI', 'Subscription', 'Other'];
+const API = process.env.REACT_APP_API_URL || 'http://localhost:5000';
 
 export default function TransactionModal() {
   const { state, dispatch, showToast } = useApp();
@@ -70,7 +71,7 @@ export default function TransactionModal() {
     setLoading(true);
     try {
       const data = { ...form, amount: Number(form.amount) };
-      const url = isEdit ? `http://localhost:5000/api/transactions/${tx._id}` : 'http://localhost:5000/api/transactions';
+      const url = isEdit ? `${API}/api/transactions/${tx._id}` : `${API}/api/transactions`;
       const method = isEdit ? 'PUT' : 'POST';
       
       const response = await fetch(url, {
