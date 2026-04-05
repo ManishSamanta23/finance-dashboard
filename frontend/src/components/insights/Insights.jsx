@@ -82,7 +82,7 @@ export default function Insights() {
           <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: 16 }}>
             <div style={{ padding: '16px', background: 'var(--bg-input)', borderRadius: 12 }}>
               <div style={{ fontSize: 12, color: 'var(--text-muted)', textTransform: 'uppercase', letterSpacing: '0.05em', marginBottom: 8 }}>Income</div>
-              <div style={{ fontFamily: 'Syne, sans-serif', fontSize: 20, fontWeight: 800, color: 'var(--income)', marginBottom: 4 }}>{fmt(currMonth.income)}</div>
+              <div style={{ fontFamily: "'JetBrains Mono', 'Fira Code', monospace", fontSize: 20, fontWeight: 600, letterSpacing: '-0.03em', color: 'var(--income)', marginBottom: 4 }}>{fmt(currMonth.income)}</div>
               <div style={{ fontSize: 13, color: 'var(--text-muted)' }}>
                 vs {fmt(prevMonth.income)} last month
                 <span style={{ marginLeft: 6, color: Number(incomeDiff) >= 0 ? 'var(--income)' : 'var(--expense)', fontWeight: 600 }}>
@@ -92,7 +92,7 @@ export default function Insights() {
             </div>
             <div style={{ padding: '16px', background: 'var(--bg-input)', borderRadius: 12 }}>
               <div style={{ fontSize: 12, color: 'var(--text-muted)', textTransform: 'uppercase', letterSpacing: '0.05em', marginBottom: 8 }}>Expenses</div>
-              <div style={{ fontFamily: 'Syne, sans-serif', fontSize: 20, fontWeight: 800, color: 'var(--expense)', marginBottom: 4 }}>{fmt(currMonth.expense)}</div>
+              <div style={{ fontFamily: "'JetBrains Mono', 'Fira Code', monospace", fontSize: 20, fontWeight: 600, letterSpacing: '-0.03em', color: 'var(--expense)', marginBottom: 4 }}>{fmt(currMonth.expense)}</div>
               <div style={{ fontSize: 13, color: 'var(--text-muted)' }}>
                 vs {fmt(prevMonth.expense)} last month
                 <span style={{ marginLeft: 6, color: Number(expenseDiff) <= 0 ? 'var(--income)' : 'var(--expense)', fontWeight: 600 }}>
@@ -111,8 +111,8 @@ export default function Insights() {
           <ResponsiveContainer width="100%" height={260}>
             <BarChart data={monthlyTrend} margin={{ top: 4, right: 4, left: 0, bottom: 0 }} barGap={4}>
               <CartesianGrid strokeDasharray="3 3" stroke="var(--border)" vertical={false} />
-              <XAxis dataKey="month" tick={{ fontSize: 12, fill: 'var(--text-muted)', fontFamily: 'DM Sans' }} axisLine={false} tickLine={false} />
-              <YAxis tick={{ fontSize: 11, fill: 'var(--text-muted)', fontFamily: 'DM Sans' }} axisLine={false} tickLine={false} tickFormatter={v => `₹${v >= 1000 ? (v / 1000).toFixed(0) + 'k' : v}`} />
+              <XAxis dataKey="month" tick={{ fontSize: 12, fill: 'var(--text-muted)', fontFamily: 'Inter' }} axisLine={false} tickLine={false} />
+              <YAxis tick={{ fontSize: 11, fill: 'var(--text-muted)', fontFamily: 'Inter' }} axisLine={false} tickLine={false} tickFormatter={v => `₹${v >= 1000 ? (v / 1000).toFixed(0) + 'k' : v}`} />
               <Tooltip content={<CustomBarTooltip />} />
               <Bar dataKey="income" name="Income" fill="#10b981" radius={[6, 6, 0, 0]} maxBarSize={40} />
               <Bar dataKey="expense" name="Expense" fill="#ef4444" radius={[6, 6, 0, 0]} maxBarSize={40} />
@@ -138,7 +138,7 @@ export default function Insights() {
                     </div>
                     <div style={{ display: 'flex', gap: 16, alignItems: 'center' }}>
                       <span style={{ fontSize: 12, color: 'var(--text-muted)' }}>{pct}%</span>
-                      <span style={{ fontFamily: 'Syne, sans-serif', fontWeight: 700, fontSize: 14 }}>{fmt(cat.amount)}</span>
+                      <span style={{ fontFamily: "'JetBrains Mono', 'Fira Code', monospace", fontWeight: 600, fontSize: 14, letterSpacing: '-0.03em' }}>{fmt(cat.amount)}</span>
                     </div>
                   </div>
                   <div className="progress-bar">

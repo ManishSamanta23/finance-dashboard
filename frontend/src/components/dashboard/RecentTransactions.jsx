@@ -46,13 +46,13 @@ export default function RecentTransactions() {
                 {getCategoryEmoji(tx.category)}
               </div>
               <div style={{ flex: 1, minWidth: 0 }}>
-                <div style={{ fontWeight: 500, fontSize: 14, whiteSpace: 'nowrap', overflow: 'hidden', textOverflow: 'ellipsis' }}>{tx.title}</div>
-                <div style={{ fontSize: 12, color: 'var(--text-muted)', marginTop: 2 }}>
+                <div style={{ fontFamily: "'Inter', sans-serif", fontWeight: 500, fontSize: 14, whiteSpace: 'nowrap', overflow: 'hidden', textOverflow: 'ellipsis' }}>{tx.title}</div>
+                <div style={{ fontFamily: "'Inter', sans-serif", fontSize: 12, color: 'var(--text-muted)', marginTop: 2 }}>
                   {tx.category} · {new Date(tx.date).toLocaleDateString('en-IN', { day: 'numeric', month: 'short' })}
                 </div>
               </div>
               <div style={{
-                fontFamily: 'Syne, sans-serif', fontWeight: 700, fontSize: 15,
+                fontFamily: "'JetBrains Mono', 'Fira Code', monospace", fontWeight: 600, fontSize: 15, letterSpacing: '-0.03em',
                 color: tx.type === 'income' ? 'var(--income)' : 'var(--expense)',
                 flexShrink: 0,
               }}>

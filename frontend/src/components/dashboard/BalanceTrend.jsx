@@ -17,7 +17,7 @@ const CustomTooltip = ({ active, payload, label }) => {
         <div key={p.name} style={{ display: 'flex', alignItems: 'center', gap: 8, marginBottom: 4 }}>
           <div style={{ width: 8, height: 8, borderRadius: '50%', background: p.color }} />
           <span style={{ fontSize: 13, color: 'var(--text-muted)', textTransform: 'capitalize' }}>{p.name}:</span>
-          <span style={{ fontSize: 13, fontWeight: 700, color: 'var(--text)', fontFamily: 'Syne, sans-serif' }}>{fmt(p.value)}</span>
+          <span style={{ fontSize: 13, fontWeight: 600, color: 'var(--text)', fontFamily: "'JetBrains Mono', 'Fira Code', monospace", letterSpacing: '-0.03em' }}>{fmt(p.value)}</span>
         </div>
       ))}
     </div>
@@ -45,10 +45,10 @@ export default function BalanceTrend({ data }) {
               </linearGradient>
             </defs>
             <CartesianGrid strokeDasharray="3 3" stroke="var(--border)" vertical={false} />
-            <XAxis dataKey="month" tick={{ fontSize: 12, fill: 'var(--text-muted)', fontFamily: 'DM Sans' }} axisLine={false} tickLine={false} />
-            <YAxis tick={{ fontSize: 11, fill: 'var(--text-muted)', fontFamily: 'DM Sans' }} axisLine={false} tickLine={false} tickFormatter={v => `₹${v >= 1000 ? (v / 1000).toFixed(0) + 'k' : v}`} />
+            <XAxis dataKey="month" tick={{ fontSize: 12, fill: 'var(--text-muted)', fontFamily: 'Inter' }} axisLine={false} tickLine={false} />
+            <YAxis tick={{ fontSize: 11, fill: 'var(--text-muted)', fontFamily: 'Inter' }} axisLine={false} tickLine={false} tickFormatter={v => `₹${v >= 1000 ? (v / 1000).toFixed(0) + 'k' : v}`} />
             <Tooltip content={<CustomTooltip />} />
-            <Legend wrapperStyle={{ fontSize: 12, paddingTop: 16, fontFamily: 'DM Sans' }} />
+            <Legend wrapperStyle={{ fontSize: 12, paddingTop: 16, fontFamily: 'Inter' }} />
             <Area type="monotone" dataKey="income" stroke="#10b981" strokeWidth={2.5} fill="url(#incomeGrad)" dot={{ fill: '#10b981', r: 4, strokeWidth: 0 }} activeDot={{ r: 6 }} name="Income" />
             <Area type="monotone" dataKey="expense" stroke="#ef4444" strokeWidth={2.5} fill="url(#expenseGrad)" dot={{ fill: '#ef4444', r: 4, strokeWidth: 0 }} activeDot={{ r: 6 }} name="Expense" />
           </AreaChart>

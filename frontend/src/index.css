@@ -1,4 +1,4 @@
-@import url('https://fonts.googleapis.com/css2?family=Syne:wght@400;500;600;700;800&family=DM+Sans:wght@300;400;500;600&display=swap');
+@import url('https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@300;400;500;600;700;800&family=Inter:wght@300;400;500;600;700&family=JetBrains+Mono:wght@400;500;600;700&display=swap');
 
 :root {
   --bg: #f0f2f7;
@@ -43,7 +43,7 @@
 html { scroll-behavior: smooth; }
 
 body {
-  font-family: 'DM Sans', sans-serif;
+  font-family: 'Inter', -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif;
   background: var(--bg);
   color: var(--text);
   min-height: 100vh;
@@ -88,11 +88,12 @@ body {
 }
 
 .logo-text {
-  font-family: 'Syne', sans-serif;
-  font-size: 17px;
-  font-weight: 700;
+  font-family: 'Plus Jakarta Sans', sans-serif;
+  font-size: 18px;
+  font-weight: 800;
   color: #fff;
   line-height: 1.1;
+  letter-spacing: -0.02em;
 }
 .logo-text span { display: block; font-size: 11px; font-weight: 400; color: rgba(255,255,255,0.4); letter-spacing: 0.05em; }
 
@@ -106,6 +107,7 @@ body {
   border-radius: 10px;
   cursor: pointer;
   color: var(--text-sidebar);
+  font-family: 'Inter', sans-serif;
   font-size: 14px;
   font-weight: 500;
   transition: all var(--transition);
@@ -128,6 +130,7 @@ body {
   gap: 6px;
   padding: 4px 10px;
   border-radius: 20px;
+  font-family: 'Inter', sans-serif;
   font-size: 11px;
   font-weight: 600;
   text-transform: uppercase;
@@ -160,10 +163,10 @@ body {
 }
 
 .page-title {
-  font-family: 'Syne', sans-serif;
-  font-size: 20px;
+  font-family: 'Plus Jakarta Sans', sans-serif;
+  font-size: 19px;
   font-weight: 700;
-  letter-spacing: -0.01em;
+  letter-spacing: -0.02em;
 }
 
 .topbar-actions { display: flex; align-items: center; gap: 12px; }
@@ -179,7 +182,7 @@ body {
   cursor: pointer;
   border: none;
   transition: all var(--transition);
-  font-family: 'DM Sans', sans-serif;
+  font-family: 'Inter', sans-serif;
   letter-spacing: 0.01em;
 }
 
@@ -227,7 +230,7 @@ body {
 }
 
 .card-title {
-  font-family: 'Syne', sans-serif;
+  font-family: 'Plus Jakarta Sans', sans-serif;
   font-size: 15px;
   font-weight: 700;
   letter-spacing: -0.01em;
@@ -253,14 +256,14 @@ body {
 .summary-card.expense { background: var(--bg-card); border: 1px solid var(--border-card); }
 .summary-card.savings { background: var(--bg-card); border: 1px solid var(--border-card); }
 
-.summary-label { font-size: 12px; font-weight: 500; text-transform: uppercase; letter-spacing: 0.06em; opacity: 0.75; margin-bottom: 10px; }
+.summary-label { font-family: 'Inter', sans-serif; font-size: 11px; font-weight: 600; text-transform: uppercase; letter-spacing: 0.07em; opacity: 0.75; margin-bottom: 10px; }
 .summary-card.balance .summary-label { color: rgba(255,255,255,0.75); }
 .summary-card:not(.balance) .summary-label { color: var(--text-muted); }
 
 .summary-amount {
-  font-family: 'Syne', sans-serif;
-  font-size: 26px;
-  font-weight: 800;
+  font-family: 'JetBrains Mono', 'Fira Code', monospace;
+  font-size: 24px;
+  font-weight: 600;
   letter-spacing: -0.03em;
   line-height: 1;
   margin-bottom: 8px;
@@ -315,7 +318,7 @@ body {
   background: var(--bg-input);
   color: var(--text);
   font-size: 14px;
-  font-family: 'DM Sans', sans-serif;
+  font-family: 'Inter', sans-serif;
   outline: none;
   transition: all var(--transition);
 }
@@ -329,7 +332,7 @@ body {
   background: var(--bg-input);
   color: var(--text);
   font-size: 14px;
-  font-family: 'DM Sans', sans-serif;
+  font-family: 'Inter', sans-serif;
   outline: none;
   cursor: pointer;
   transition: all var(--transition);
@@ -340,6 +343,7 @@ body {
 .transaction-table { width: 100%; border-collapse: separate; border-spacing: 0; }
 .transaction-table th {
   padding: 12px 16px;
+  font-family: 'Inter', sans-serif;
   font-size: 11px;
   font-weight: 600;
   text-transform: uppercase;
@@ -357,6 +361,7 @@ body {
 
 .transaction-table td {
   padding: 14px 16px;
+  font-family: 'Inter', sans-serif;
   font-size: 14px;
   border-bottom: 1px solid var(--border);
   vertical-align: middle;
@@ -369,7 +374,7 @@ body {
 .tx-title { font-weight: 500; color: var(--text); }
 .tx-note { font-size: 12px; color: var(--text-muted); margin-top: 2px; }
 
-.amount-cell { font-weight: 700; font-family: 'Syne', sans-serif; font-size: 15px; letter-spacing: -0.02em; }
+.amount-cell { font-weight: 600; font-family: 'JetBrains Mono', 'Fira Code', monospace; font-size: 15px; letter-spacing: -0.03em; }
 .amount-income { color: var(--income); }
 .amount-expense { color: var(--expense); }
 
@@ -379,6 +384,7 @@ body {
   gap: 5px;
   padding: 4px 10px;
   border-radius: 20px;
+  font-family: 'Inter', sans-serif;
   font-size: 12px;
   font-weight: 500;
   background: var(--bg-input);
@@ -391,6 +397,7 @@ body {
   display: inline-flex;
   padding: 3px 10px;
   border-radius: 20px;
+  font-family: 'Inter', sans-serif;
   font-size: 11px;
   font-weight: 600;
   text-transform: uppercase;
@@ -434,7 +441,7 @@ body {
   align-items: center;
   justify-content: space-between;
 }
-.modal-title { font-family: 'Syne', sans-serif; font-size: 18px; font-weight: 700; }
+.modal-title { font-family: 'Plus Jakarta Sans', sans-serif; font-size: 18px; font-weight: 700; }
 .modal-close { background: none; border: none; font-size: 20px; cursor: pointer; color: var(--text-muted); padding: 4px; transition: color var(--transition); }
 .modal-close:hover { color: var(--text); }
 .modal-body { padding: 20px 24px 24px; }
@@ -450,7 +457,7 @@ body {
   background: var(--bg-input);
   color: var(--text);
   font-size: 14px;
-  font-family: 'DM Sans', sans-serif;
+  font-family: 'Inter', sans-serif;
   outline: none;
   transition: all var(--transition);
 }
@@ -466,8 +473,8 @@ body {
 }
 
 .insight-icon { font-size: 28px; margin-bottom: 12px; }
-.insight-title { font-size: 12px; text-transform: uppercase; letter-spacing: 0.06em; color: var(--text-muted); font-weight: 600; margin-bottom: 6px; }
-.insight-value { font-family: 'Syne', sans-serif; font-size: 22px; font-weight: 800; letter-spacing: -0.02em; margin-bottom: 4px; }
+.insight-title { font-family: 'Inter', sans-serif; font-size: 12px; text-transform: uppercase; letter-spacing: 0.06em; color: var(--text-muted); font-weight: 600; margin-bottom: 6px; }
+.insight-value { font-family: 'JetBrains Mono', 'Fira Code', monospace; font-size: 22px; font-weight: 600; letter-spacing: -0.03em; margin-bottom: 4px; }
 .insight-desc { font-size: 13px; color: var(--text-muted); }
 
 /* Progress bar */
@@ -479,7 +486,7 @@ body {
 .legend-item { display: flex; align-items: center; gap: 10px; }
 .legend-dot { width: 10px; height: 10px; border-radius: 3px; flex-shrink: 0; }
 .legend-label { font-size: 13px; flex: 1; color: var(--text); }
-.legend-amount { font-size: 13px; font-weight: 600; color: var(--text); font-family: 'Syne', sans-serif; }
+.legend-amount { font-size: 13px; font-weight: 600; color: var(--text); font-family: 'JetBrains Mono', 'Fira Code', monospace; }
 .legend-pct { font-size: 12px; color: var(--text-muted); }
 
 /* Mobile menu */
@@ -528,7 +535,7 @@ body {
   color: white;
   flex-shrink: 0;
 }
-.user-name { font-size: 13px; font-weight: 600; color: white; margin-bottom: 4px; }
+.user-name { font-family: 'Inter', sans-serif; font-size: 13px; font-weight: 600; color: white; margin-bottom: 4px; }
 .user-email { font-size: 11px; color: rgba(255,255,255,0.5); margin-bottom: 6px; }
 .user-role { display: flex; align-items: center; }
 
@@ -585,7 +592,7 @@ body {
   background: var(--bg-input);
   color: var(--text);
   font-size: 13px;
-  font-family: 'DM Sans', sans-serif;
+  font-family: 'Inter', sans-serif;
   outline: none;
   transition: all var(--transition);
 }
@@ -621,18 +628,19 @@ body {
 }
 
 .summary-label {
-  font-size: 12px;
-  font-weight: 500;
+  font-family: 'Inter', sans-serif;
+  font-size: 11px;
+  font-weight: 600;
   text-transform: uppercase;
-  letter-spacing: 0.06em;
+  letter-spacing: 0.08em;
   color: var(--text-muted);
 }
 
 .summary-value {
-  font-family: 'Syne', sans-serif;
-  font-size: 22px;
-  font-weight: 800;
-  letter-spacing: -0.02em;
+  font-family: 'JetBrains Mono', 'Fira Code', monospace;
+  font-size: 24px;
+  font-weight: 600;
+  letter-spacing: -0.04em;
 }
 
 .summary-value.income { color: var(--income); }
@@ -696,10 +704,10 @@ body {
 }
 
 .transaction-card-amount {
-  font-family: 'Syne', sans-serif;
-  font-size: 18px;
-  font-weight: 800;
-  letter-spacing: -0.02em;
+  font-family: 'JetBrains Mono', 'Fira Code', monospace;
+  font-size: 16px;
+  font-weight: 600;
+  letter-spacing: -0.03em;
 }
 
 .transaction-card-amount.amount-income { color: var(--income); }
