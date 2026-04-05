@@ -1,5 +1,6 @@
 import React, { createContext, useContext, useReducer, useEffect } from 'react';
 import { mockTransactions } from '../data/mockData';
+import { useAuth } from './AuthContext';
 
 const AppContext = createContext();
 const API = process.env.REACT_APP_API_URL || '';
@@ -76,6 +77,7 @@ function reducer(state, action) {
 
 export function AppProvider({ children }) {
   const [state, dispatch] = useReducer(reducer, initialState);
+  const { token, user, isAuthenticated } = useAuth();
 
   useEffect(() => {
     const loadLocalData = () => {
@@ -85,8 +87,7 @@ export function AppProvider({ children }) {
       dispatch({ type: 'SET_INSIGHTS', payload: computeInsights(transactions) });
     };
 
-    const token = localStorage.getItem('fd_token');
-    if (!token) {
+    if (!isAuthenticated || !token) {
       loadLocalData();
       return;
     }
@@ -112,7 +113,7 @@ export function AppProvider({ children }) {
       .catch(() => {
         loadLocalData();
       });
-  }, []);
+  }, [token, user?.id, isAuthenticated]);
 
   useEffect(() => {
     dispatch({ type: 'SET_INSIGHTS', payload: computeInsights(state.transactions) });
