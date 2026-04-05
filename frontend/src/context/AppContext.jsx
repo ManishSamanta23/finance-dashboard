@@ -26,17 +26,14 @@ function reducer(state, action) {
     case 'SET_TRANSACTIONS': return { ...state, transactions: action.payload };
     case 'ADD_TRANSACTION': {
       const updated = [action.payload, ...state.transactions];
-      localStorage.setItem('fd_transactions', JSON.stringify(updated));
       return { ...state, transactions: updated };
     }
     case 'UPDATE_TRANSACTION': {
       const updated = state.transactions.map(t => t._id === action.payload._id ? action.payload : t);
-      localStorage.setItem('fd_transactions', JSON.stringify(updated));
       return { ...state, transactions: updated };
     }
     case 'DELETE_TRANSACTION': {
       const updated = state.transactions.filter(t => t._id !== action.payload);
-      localStorage.setItem('fd_transactions', JSON.stringify(updated));
       return { ...state, transactions: updated };
     }
     case 'SET_FILTER': return { ...state, filters: { ...state.filters, ...action.payload } };
@@ -79,9 +76,11 @@ export function AppProvider({ children }) {
   const [state, dispatch] = useReducer(reducer, initialState);
   const { token, user, isAuthenticated } = useAuth();
 
+  const getTransactionStorageKey = (userId) => `fd_transactions_${userId || 'guest'}`;
+
   useEffect(() => {
     const loadLocalData = () => {
-      const saved = localStorage.getItem('fd_transactions');
+      const saved = localStorage.getItem(getTransactionStorageKey(user?.id));
       const transactions = saved ? JSON.parse(saved) : mockTransactions;
       dispatch({ type: 'SET_TRANSACTIONS', payload: transactions });
       dispatch({ type: 'SET_INSIGHTS', payload: computeInsights(transactions) });
@@ -105,7 +104,6 @@ export function AppProvider({ children }) {
         if (result.success && result.data) {
           dispatch({ type: 'SET_TRANSACTIONS', payload: result.data });
           dispatch({ type: 'SET_INSIGHTS', payload: computeInsights(result.data) });
-          localStorage.setItem('fd_transactions', JSON.stringify(result.data));
         } else {
           loadLocalData();
         }
@@ -114,6 +112,13 @@ export function AppProvider({ children }) {
         loadLocalData();
       });
   }, [token, user?.id, isAuthenticated]);
+
+  useEffect(() => {
+    localStorage.setItem(
+      getTransactionStorageKey(user?.id),
+      JSON.stringify(state.transactions)
+    );
+  }, [state.transactions, user?.id]);
 
   useEffect(() => {
     dispatch({ type: 'SET_INSIGHTS', payload: computeInsights(state.transactions) });

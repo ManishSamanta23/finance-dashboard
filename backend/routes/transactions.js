@@ -9,12 +9,30 @@ const mockStoreByUser = new Map();
 
 const getUserId = (req) => req.user?.id || 'guest';
 
+const buildMockTransactionsForUser = (userId) =>
+  mockTransactions.map((transaction, index) => ({
+    ...transaction,
+    _id: `${userId}-mock-${index + 1}`,
+    createdBy: userId,
+  }));
+
 const getMockStoreForUser = (req) => {
   const userId = getUserId(req);
   if (!mockStoreByUser.has(userId)) {
-    mockStoreByUser.set(userId, [...mockTransactions]);
+    mockStoreByUser.set(userId, buildMockTransactionsForUser(userId));
   }
   return mockStoreByUser.get(userId);
+};
+
+const seedDatabaseForUser = async (userId) => {
+  const existingCount = await Transaction.countDocuments({ createdBy: userId });
+  if (existingCount === 0) {
+    const seededTransactions = mockTransactions.map((transaction) => ({
+      ...transaction,
+      createdBy: userId,
+    }));
+    await Transaction.insertMany(seededTransactions);
+  }
 };
 
 // Validation middleware for transaction creation/update
@@ -97,6 +115,7 @@ router.get('/', async (req, res) => {
     }
 
     // MongoDB mode
+    await seedDatabaseForUser(userId);
     let query = { createdBy: userId };
     if (type) query.type = type;
     if (category) query.category = category;
@@ -111,7 +130,7 @@ router.get('/', async (req, res) => {
     res.json({ success: true, data: transactions, mode: 'database' });
   } catch (err) {
     // Fallback to mock store on error
-    res.json({ success: true, data: mockStore, mode: 'mock', error: 'Using mock data due to DB error' });
+    res.json({ success: true, data: getMockStoreForUser(req), mode: 'mock', error: 'Using mock data due to DB error' });
   }
 });
 
@@ -124,7 +143,7 @@ router.post('/', validateTransaction, async (req, res) => {
     if (!isConnected()) {
       // Mock mode - create in-memory transaction
       const newMockTransaction = {
-        _id: Date.now().toString(),
+        _id: `${userId}-tx-${Date.now()}`,
         ...req.body,
         amount: Number(req.body.amount),
         createdBy: userId,
@@ -151,14 +170,16 @@ router.post('/', validateTransaction, async (req, res) => {
   } catch (err) {
     // If DB error, try mock mode as fallback
     if (!isConnected()) {
+      const userId = getUserId(req);
       const newMockTransaction = {
-        _id: Date.now().toString(),
+        _id: `${userId}-tx-${Date.now()}`,
         ...req.body,
         amount: Number(req.body.amount),
+        createdBy: userId,
         createdAt: new Date(),
         updatedAt: new Date()
       };
-      mockStore.unshift(newMockTransaction);
+      getMockStoreForUser(req).unshift(newMockTransaction);
       return res.status(201).json({
         success: true,
         data: newMockTransaction,
@@ -189,6 +210,7 @@ router.put('/:id', validateTransaction, async (req, res) => {
         ...req.body,
         amount: Number(req.body.amount),
         _id: mockStore[index]._id,
+        createdBy: mockStore[index].createdBy,
         createdAt: mockStore[index].createdAt,
         updatedAt: new Date()
       };
@@ -218,6 +240,7 @@ router.put('/:id', validateTransaction, async (req, res) => {
         ...req.body,
         amount: Number(req.body.amount),
         _id: mockStore[index]._id,
+        createdBy: mockStore[index].createdBy,
         createdAt: mockStore[index].createdAt,
         updatedAt: new Date()
       };
