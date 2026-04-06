@@ -26,7 +26,6 @@ export default function TransactionModal() {
   const [tagInput, setTagInput] = useState('');
   const [errors, setErrors] = useState({});
   const [loading, setLoading] = useState(false);
-  const [showSuccess, setShowSuccess] = useState(false);
   const amountInputRef = useRef(null);
 
   useEffect(() => {
@@ -183,12 +182,6 @@ export default function TransactionModal() {
           <h2 className="modal-title">{isEdit ? 'Edit Transaction' : 'Add Transaction'}</h2>
           <button className="modal-close" onClick={close}>✕</button>
         </div>
-
-        {showSuccess && (
-          <div className="modal-success-banner">
-            <span>✓ Saved!</span>
-          </div>
-        )}
 
         <div className="modal-body">
           {/* Type Toggle */}
