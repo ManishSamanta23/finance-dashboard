@@ -1,78 +1,153 @@
-# Finance Dashboard
+<h1 align="center">Finance Dashboard</h1>
 
-A full-stack finance dashboard built with React, Express, and MongoDB.
+<p align="center">
+  Full-stack personal finance platform with secure authentication, role-based access, analytics insights, and Vercel deployment.
+</p>
 
-This project supports authenticated transaction management, analytics dashboards, role-based admin controls, and deployment on Vercel.
+<p align="center">
+  <a href="https://finance-dashboard-xi-hazel.vercel.app"><img src="https://img.shields.io/badge/Live%20Demo-Vercel-000000?logo=vercel&logoColor=white" alt="Live Demo"></a>
+  <img src="https://img.shields.io/badge/Frontend-React%2018-61dafb?logo=react&logoColor=white" alt="React 18">
+  <img src="https://img.shields.io/badge/Backend-Node.js%20%2B%20Express-339933?logo=node.js&logoColor=white" alt="Node and Express">
+  <img src="https://img.shields.io/badge/Database-MongoDB-47A248?logo=mongodb&logoColor=white" alt="MongoDB">
+</p>
 
-## Live Demo
+---
 
-- Vercel: https://finance-dashboard-xi-hazel.vercel.app
+## Live Application
 
-## What Is Implemented
+- https://finance-dashboard-xi-hazel.vercel.app
 
-- JWT authentication (register, login, current user)
-- Role-based access (`admin`, `viewer`)
+## Table of Contents
+
+- [Overview](#overview)
+- [Implemented Capabilities](#implemented-capabilities)
+- [Architecture](#architecture)
+- [Technology Stack](#technology-stack)
+- [API Reference](#api-reference)
+- [Project Structure](#project-structure)
+- [Local Development](#local-development)
+- [Environment Variables](#environment-variables)
+- [Scripts](#scripts)
+- [Deployment on Vercel](#deployment-on-vercel)
+- [Operational Notes](#operational-notes)
+
+## Overview
+
+Finance Dashboard is a role-aware transaction and analytics application built with a React frontend and Express + MongoDB backend.
+
+The current implementation includes:
+
+- User authentication and authorization using JWT
+- Protected transaction management endpoints
+- Admin-only user management and stats endpoints
+- Insights dashboards (trend, categories, totals)
+- Serverless API entry for Vercel deployment
+
+## Implemented Capabilities
+
+### Authentication and Access
+
+- Register user account
+- Login with JWT issuance
+- Fetch current authenticated user
+- Role model: `admin`, `viewer`
+- Route protection via auth middleware
+
+### Transactions
+
+- Create, read, update, and delete transactions
 - Protected transaction APIs
-- Transaction CRUD for authenticated users
-- Combined transaction view:
+- Per-user transaction view logic combining:
   - shared mock transactions
-  - user-created personal transactions
-  - user-specific edits/deletions on mock transactions
-- Insights API for totals, category breakdown, trend data, savings rate
-- Admin APIs for user management and platform stats
-- Frontend pages:
-  - Dashboard
-  - Transactions
-  - Insights
-  - Admin Panel (admin only)
-- Transaction tools in UI:
-  - filter/search/sort
-  - table/card view
-  - CSV export
-  - selection and bulk delete (admin)
-- Theme toggle (light/dark)
+  - user personal transactions
+  - user-specific edits/deletes on mock entries
+- Filter, search, and sort in UI
+- Table and card view modes
+- CSV export from transactions view
+- Bulk selection and bulk delete for admin
+
+### Insights and Dashboard
+
+- Summary metrics (balance, income, expenses)
+- Savings rate and transaction count
+- Expense category breakdown
+- Monthly trend data
+- Dashboard widgets and charts in React/Recharts
+
+### Admin Panel
+
+- List all users
+- Update user role
+- Toggle user active status
+- Delete user (with self-delete restriction)
+- Platform-level stats overview
+
+### UI Experience
+
+- Dark/light mode toggle
 - Toast notifications
-- Vercel serverless API entry (`api/index.js`)
+- Protected routes for authenticated areas
 
-## Tech Stack
+## Architecture
 
-### Frontend
-- React 18
-- React Router
-- Recharts
-- Axios
+```text
+Frontend (React)
+  |-- AuthContext + AppContext
+  |-- Pages: Dashboard / Transactions / Insights / Admin
+  |-- Charts: Recharts
+  |
+  v
+Backend (Express API)
+  |-- /api/auth
+  |-- /api/transactions
+  |-- /api/insights
+  |-- /api/admin
+  |
+  v
+MongoDB (Mongoose)
+```
 
-### Backend
-- Node.js + Express
-- MongoDB + Mongoose
-- JWT (`jsonwebtoken`)
-- Password hashing (`bcryptjs`)
+## Technology Stack
+
+| Layer | Tools |
+|---|---|
+| Frontend | React 18, React Router, Recharts, Axios |
+| Backend | Node.js, Express |
+| Database | MongoDB, Mongoose |
+| Security | jsonwebtoken, bcryptjs |
+| Deployment | Vercel (`api/index.js`, `vercel.json`) |
+
+## API Reference
+
+| Area | Method | Endpoint | Access |
+|---|---|---|---|
+| Auth | POST | `/api/auth/register` | Public |
+| Auth | POST | `/api/auth/login` | Public |
+| Auth | GET | `/api/auth/me` | Protected |
+| Transactions | GET | `/api/transactions` | Protected |
+| Transactions | POST | `/api/transactions` | Protected |
+| Transactions | PUT | `/api/transactions/:id` | Protected |
+| Transactions | DELETE | `/api/transactions/:id` | Protected |
+| Insights | GET | `/api/insights` | Protected |
+| Admin | GET | `/api/admin/stats` | Admin only |
+| Admin | GET | `/api/admin/users` | Admin only |
+| Admin | PUT | `/api/admin/users/:id/role` | Admin only |
+| Admin | PUT | `/api/admin/users/:id/status` | Admin only |
+| Admin | DELETE | `/api/admin/users/:id` | Admin only |
+| Health | GET | `/api/health` | Public |
 
 ## Project Structure
 
 ```text
 finance-dashboard/
 |- api/
-|  |- index.js                # Vercel serverless API app
+|  |- index.js
 |- backend/
 |  |- config/
-|  |  |- db.js
-|  |  |- fileStore.js
-|  |  |- mockData.js
-|  |  |- seed.js
 |  |- data/
-|  |  |- transactions.json
-|  |  |- users.json
 |  |- middleware/
-|  |  |- auth.js
 |  |- models/
-|  |  |- Transaction.js
-|  |  |- User.js
 |  |- routes/
-|  |  |- admin.js
-|  |  |- auth.js
-|  |  |- insights.js
-|  |  |- transactions.js
 |  |- server.js
 |- frontend/
 |  |- src/
@@ -86,58 +161,34 @@ finance-dashboard/
 |- package.json
 ```
 
-## API Endpoints
-
-### Auth
-- `POST /api/auth/register`
-- `POST /api/auth/login`
-- `GET /api/auth/me`
-
-### Transactions (Protected)
-- `GET /api/transactions`
-- `POST /api/transactions`
-- `PUT /api/transactions/:id`
-- `DELETE /api/transactions/:id`
-
-### Insights (Protected)
-- `GET /api/insights`
-
-### Admin (Admin only)
-- `GET /api/admin/stats`
-- `GET /api/admin/users`
-- `PUT /api/admin/users/:id/role`
-- `PUT /api/admin/users/:id/status`
-- `DELETE /api/admin/users/:id`
-
-### Health
-- `GET /api/health`
-
 ## Local Development
 
 ### Prerequisites
-- Node.js (project root currently specifies `24.x` in `engines`)
-- npm
-- MongoDB (local or Atlas)
 
-### Install
+- Node.js (root `package.json` currently declares `24.x`)
+- npm
+- MongoDB local instance or MongoDB Atlas
+
+### Install dependencies
 
 ```bash
 npm run install-all
 ```
 
-### Run (frontend + backend)
+### Run frontend and backend
 
 ```bash
 npm run dev
 ```
 
-Default URLs:
+### Local URLs
+
 - Frontend: `http://localhost:3000`
 - Backend: `http://localhost:5000`
 
 ## Environment Variables
 
-### backend/.env
+### Backend (`backend/.env`)
 
 ```env
 PORT=5000
@@ -146,7 +197,7 @@ JWT_SECRET=replace_with_secure_secret
 ADMIN_REGISTRATION_CODE=optional_admin_code
 ```
 
-### frontend/.env.local (optional)
+### Frontend (`frontend/.env.local`) optional
 
 ```env
 REACT_APP_API_URL=http://localhost:5000
@@ -154,35 +205,41 @@ REACT_APP_API_URL=http://localhost:5000
 
 ## Scripts
 
-### Root
-- `npm run install-all` - install root, backend, and frontend dependencies
-- `npm run dev` - run backend and frontend together
-- `npm run dev:backend` - run backend only
-- `npm run dev:frontend` - run frontend only
-- `npm run seed` - seed backend data
-- `npm run build` - build frontend
+### Root scripts
 
-### Backend
-- `npm run dev` - start backend with nodemon
-- `npm start` - start backend with node
+- `npm run install-all` installs root, backend, and frontend dependencies
+- `npm run dev` starts backend + frontend concurrently
+- `npm run dev:backend` starts backend only
+- `npm run dev:frontend` starts frontend only
+- `npm run seed` runs backend seed script
+- `npm run build` builds frontend production assets
 
-### Frontend
-- `npm start` - start React app
-- `npm run build` - production build
+### Backend scripts
 
-## Deployment (Vercel)
+- `npm run dev` starts backend with nodemon
+- `npm start` starts backend with node
 
-This repository is configured for Vercel with:
-- build output from `frontend/build`
-- API routes served by `api/index.js`
-- SPA routing in `vercel.json`
+### Frontend scripts
 
-Required Vercel environment variables:
+- `npm start` starts React dev server
+- `npm run build` creates production build
+
+## Deployment on Vercel
+
+This repository is already configured for Vercel deployment:
+
+- Build output directory: `frontend/build`
+- Serverless API entry: `api/index.js`
+- SPA route handling: `vercel.json`
+
+### Required Vercel environment variables
+
 - `MONGO_URI`
 - `JWT_SECRET`
-- `REACT_APP_API_URL` (can be empty for same-origin `/api` routing)
+- `REACT_APP_API_URL` (can be empty for same-origin `/api` usage)
 
-## Notes
+## Operational Notes
 
-- In CI (including Vercel), React build treats warnings as errors when `CI=true`.
-- Keep frontend ESLint warnings at zero to avoid failed deployments.
+- In CI environments (including Vercel), React treats warnings as errors when `CI=true`.
+- Keep frontend ESLint warnings at zero to prevent build failures.
+- The `fs.F_OK` deprecation warning is dependency/runtime noise and not the actual deployment blocker by itself.
