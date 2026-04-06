@@ -89,7 +89,10 @@ export default function TransactionModal() {
           `http://localhost:5000/api/transactions/${tx._id}`,
           {
             method: 'PUT',
-            headers: { 'Content-Type': 'application/json' },
+            headers: { 
+              'Content-Type': 'application/json',
+              ...(token ? { Authorization: `Bearer ${token}` } : {})
+            },
             body: JSON.stringify(data),
           }
         );
@@ -106,7 +109,10 @@ export default function TransactionModal() {
           'http://localhost:5000/api/transactions',
           {
             method: 'POST',
-            headers: { 'Content-Type': 'application/json' },
+            headers: { 
+              'Content-Type': 'application/json',
+              ...(token ? { Authorization: `Bearer ${token}` } : {})
+            },
             body: JSON.stringify(data),
           }
         );

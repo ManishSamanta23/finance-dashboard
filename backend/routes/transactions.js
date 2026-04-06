@@ -3,7 +3,7 @@ const router = express.Router();
 const Transaction = require('../models/Transaction');
 const User = require('../models/User');
 const { isConnected } = require('../config/db');
-const { adminOnly } = require('../middleware/auth');
+const { protect, adminOnly } = require('../middleware/auth');
 const fileStore = require('../config/fileStore');
 
 // Mock data - shared by all users
@@ -122,7 +122,7 @@ const validateTransaction = (req, res, next) => {
 };
 
 // GET all transactions with filters
-router.get('/', async (req, res) => {
+router.get('/', protect, async (req, res) => {
   try {
     const userId = getUserId(req);
     const { type, category, search, sortBy = 'date', order = 'desc', startDate, endDate } = req.query;
@@ -169,7 +169,7 @@ router.get('/', async (req, res) => {
 });
 
 // POST create transaction
-router.post('/', validateTransaction, async (req, res) => {
+router.post('/', protect, validateTransaction, async (req, res) => {
   try {
     const userId = getUserId(req);
     const newTransactionData = {
@@ -233,7 +233,7 @@ router.post('/', validateTransaction, async (req, res) => {
 });
 
 // PUT update transaction
-router.put('/:id', validateTransaction, async (req, res) => {
+router.put('/:id', protect, validateTransaction, async (req, res) => {
   try {
     const userId = getUserId(req);
     const transactionId = req.params.id;
@@ -339,7 +339,7 @@ router.put('/:id', validateTransaction, async (req, res) => {
 });
 
 // DELETE transaction
-router.delete('/:id', async (req, res) => {
+router.delete('/:id', protect, async (req, res) => {
   try {
     const userId = getUserId(req);
     const transactionId = req.params.id;

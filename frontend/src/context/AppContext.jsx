@@ -79,7 +79,15 @@ export function AppProvider({ children }) {
   useEffect(() => {
     const loadFromAPI = async () => {
       try {
-        const response = await fetch(`http://localhost:5000/api/transactions`);
+        const token = localStorage.getItem('fd_token');
+        const headers = {};
+        if (token) {
+          headers['Authorization'] = `Bearer ${token}`;
+        }
+
+        const response = await fetch(`http://localhost:5000/api/transactions`, {
+          headers
+        });
         const result = await response.json();
         if (result.success && result.data.length > 0) {
           dispatch({ type: 'SET_TRANSACTIONS', payload: result.data });
