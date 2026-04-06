@@ -4,7 +4,6 @@ import { useAuth } from '../../context/AuthContext';
 
 const INCOME_CATEGORIES = ['Salary', 'Freelance', 'Investment', 'Business', 'Gift', 'Bonus', 'Other Income'];
 const EXPENSE_CATEGORIES = ['Housing', 'Food', 'Transport', 'Health', 'Entertainment', 'Shopping', 'Utilities', 'Travel', 'Education', 'Personal Care', 'Insurance', 'EMI', 'Subscription', 'Other'];
-const API = process.env.REACT_APP_API_URL || '';
 
 export default function TransactionModal() {
   const { state, dispatch, showToast } = useApp();

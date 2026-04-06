@@ -3,7 +3,6 @@ import { mockTransactions } from '../data/mockData';
 import { useAuth } from './AuthContext';
 
 const AppContext = createContext();
-const API = process.env.REACT_APP_API_URL || '';
 
 const initialState = {
   transactions: [],
