@@ -4,6 +4,7 @@ import { useAuth } from '../../context/AuthContext';
 
 const INCOME_CATEGORIES = ['Salary', 'Freelance', 'Investment', 'Business', 'Gift', 'Bonus', 'Other Income'];
 const EXPENSE_CATEGORIES = ['Housing', 'Food', 'Transport', 'Health', 'Entertainment', 'Shopping', 'Utilities', 'Travel', 'Education', 'Personal Care', 'Insurance', 'EMI', 'Subscription', 'Other'];
+const API = process.env.REACT_APP_API_URL || '';
 
 export default function TransactionModal() {
   const { state, dispatch, showToast } = useApp();
@@ -84,7 +85,7 @@ export default function TransactionModal() {
       if (isEdit) {
         // Update existing transaction in database
         const response = await fetch(
-          `http://localhost:5000/api/transactions/${tx._id}`,
+          `${API}/api/transactions/${tx._id}`,
           {
             method: 'PUT',
             headers: { 
@@ -104,7 +105,7 @@ export default function TransactionModal() {
       } else {
         // Create new transaction in database
         const response = await fetch(
-          'http://localhost:5000/api/transactions',
+          `${API}/api/transactions`,
           {
             method: 'POST',
             headers: { 

@@ -3,7 +3,7 @@ import { mockTransactions } from '../data/mockData';
 import { useAuth } from './AuthContext';
 
 const AppContext = createContext();
-
+const API = process.env.REACT_APP_API_URL || '';
 const initialState = {
   transactions: [],
   filters: { type: '', category: '', search: '', sortBy: 'date', order: 'desc' },
@@ -84,7 +84,7 @@ export function AppProvider({ children }) {
           headers['Authorization'] = `Bearer ${token}`;
         }
 
-        const response = await fetch(`http://localhost:5000/api/transactions`, {
+        const response = await fetch(`${API}/api/transactions`, {
           headers
         });
         const result = await response.json();
