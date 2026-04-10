@@ -155,8 +155,13 @@ finance-dashboard/
 |  |  |- context/
 |  |  |- pages/
 |  |  |- data/
+|  |  |- utils/
+|  |  |  |- api.js (centralized API_BASE_URL configuration)
 |  |  |- App.jsx
 |  |  |- index.jsx
+|  |- .env (local development)
+|  |- .env.example
+|  |- .env.production
 |- vercel.json
 |- package.json
 ```
@@ -197,11 +202,24 @@ JWT_SECRET=replace_with_secure_secret
 ADMIN_REGISTRATION_CODE=optional_admin_code
 ```
 
-### Frontend (`frontend/.env.local`) optional
+### Frontend (`frontend/.env`) - Local Development
 
 ```env
+# Local development: backend runs on localhost:5000
 REACT_APP_API_URL=http://localhost:5000
 ```
+
+### Frontend (`frontend/.env.production`) - Production Reference
+
+```env
+# Production deployment: update to your deployed backend URL
+# Examples:
+# REACT_APP_API_URL=/api                    (for same-origin deployment)
+# REACT_APP_API_URL=https://your-backend.com (for external service)
+REACT_APP_API_URL=https://your-backend-url.com
+```
+
+**Critical for Vercel Deployment:** Set `REACT_APP_API_URL` in Vercel project Environment Variables to ensure all users (not just localhost) can connect to the backend. This variable is read by `frontend/src/utils/api.js`.
 
 ## Scripts
 
@@ -226,20 +244,52 @@ REACT_APP_API_URL=http://localhost:5000
 
 ## Deployment on Vercel
 
-This repository is already configured for Vercel deployment:
+This repository is configured for Vercel deployment with serverless API handling.
+
+**Live Demo:** https://finance-dashboard-xi-hazel.vercel.app
+
+### Deployment Configuration
 
 - Build output directory: `frontend/build`
 - Serverless API entry: `api/index.js`
 - SPA route handling: `vercel.json`
 
-### Required Vercel environment variables
+### Required Environment Variables in Vercel
 
-- `MONGO_URI`
-- `JWT_SECRET`
-- `REACT_APP_API_URL` (can be empty for same-origin `/api` usage)
+Set these in your Vercel project **Settings → Environment Variables**:
+
+| Variable | Value | Purpose |
+|---|---|---|
+| `MONGO_URI` | MongoDB connection string | Database connection |
+| `JWT_SECRET` | Secure random string | Token signing secret |
+| `REACT_APP_API_URL` | Backend URL | Frontend API endpoint |
+
+### Setting `REACT_APP_API_URL` for Vercel
+
+This is critical for the app to work for other users visiting your Vercel link.
+
+**Option A: Same-origin (Recommended for Vercel)**
+```
+REACT_APP_API_URL=/api
+```
+Use this if your backend is also deployed on Vercel via `api/index.js`.
+
+**Option B: External backend service**
+```
+REACT_APP_API_URL=https://your-backend-service.com
+```
+Use this if your backend runs on Heroku, Railway, Render, or another platform.
+
+### Why This Matters
+
+**Problem:** If `REACT_APP_API_URL` is hardcoded to `http://localhost:5000`, users on other devices get `ERR_CONNECTION_REFUSED` when they try to create transactions.
+
+**Solution:** The frontend now reads `REACT_APP_API_URL` from environment variables via `frontend/src/utils/api.js`. Set this in Vercel, and all users will connect to the correct backend.
 
 ## Operational Notes
 
 - In CI environments (including Vercel), React treats warnings as errors when `CI=true`.
 - Keep frontend ESLint warnings at zero to prevent build failures.
 - The `fs.F_OK` deprecation warning is dependency/runtime noise and not the actual deployment blocker by itself.
+- **Port conflicts (local dev):** If port 5000 is in use, kill Node processes: `taskkill /F /IM node.exe` (Windows) or `pkill node` (Mac/Linux).
+- **Multi-user deployment:** Always set `REACT_APP_API_URL` in Vercel environment variables; otherwise, users on other devices cannot connect to the backend.
