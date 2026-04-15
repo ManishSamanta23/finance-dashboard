@@ -3,6 +3,8 @@ import axios from 'axios';
 import { useAuth } from '../context/AuthContext';
 import styles from './AdminPanel.module.css';
 
+const API = process.env.REACT_APP_API_URL || '';
+
 const AdminPanel = () => {
   const { user: currentUser, token } = useAuth();
   const [stats, setStats] = useState(null);
@@ -24,8 +26,8 @@ const AdminPanel = () => {
     try {
       setLoading(true);
       const [statsRes, usersRes] = await Promise.all([
-        axios.get(`http://localhost:5000/api/admin/stats`, { headers: getHeaders() }),
-        axios.get(`http://localhost:5000/api/admin/users`, { headers: getHeaders() }),
+        axios.get(`${API}/api/admin/stats`, { headers: getHeaders() }),
+        axios.get(`${API}/api/admin/users`, { headers: getHeaders() }),
       ]);
       setStats(statsRes.data.data);
       setUsers(usersRes.data.data);
@@ -35,7 +37,7 @@ const AdminPanel = () => {
       setError(
         err.response?.data?.message ||
           err.message ||
-          'Failed to fetch admin data. Make sure backend is running on http://localhost:5000'
+          'Failed to fetch admin data.'
       );
     } finally {
       setLoading(false);
@@ -56,7 +58,7 @@ const AdminPanel = () => {
 
   const handleRoleChange = async (userId, newRole) => {
     try {
-      await axios.put(`http://localhost:5000/api/admin/users/${userId}/role`, 
+      await axios.put(`${API}/api/admin/users/${userId}/role`, 
         { role: newRole },
         { headers: getHeaders() }
       );
@@ -70,7 +72,7 @@ const AdminPanel = () => {
 
   const handleStatusChange = async (userId, newStatus) => {
     try {
-      await axios.put(`http://localhost:5000/api/admin/users/${userId}/status`, 
+      await axios.put(`${API}/api/admin/users/${userId}/status`, 
         { isActive: newStatus },
         { headers: getHeaders() }
       );
@@ -91,7 +93,7 @@ const AdminPanel = () => {
       )
     ) {
       try {
-        await axios.delete(`http://localhost:5000/api/admin/users/${userId}`, 
+        await axios.delete(`${API}/api/admin/users/${userId}`, 
           { headers: getHeaders() }
         );
         setSuccessMessage('User deleted successfully');
